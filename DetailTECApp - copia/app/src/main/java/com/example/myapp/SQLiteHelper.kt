@@ -1,8 +1,11 @@
 package com.example.myapp
 
+import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import java.lang.Exception
 
 class SQLiteHelper (context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -97,9 +100,11 @@ class SQLiteHelper (context: Context) :
         onCreate(db)
     }
 
+    // Start of Provider Table methods
+
     private fun createProviderTable(db: SQLiteDatabase?) {
         val providerTable = ("CREATE TABLE " + TBL_PROVIDER + " (" +
-                LEGAL_IDENTITY + " TEXT PRIMARY KEY," +
+                LEGAL_IDENTITY + " INTEGER PRIMARY KEY," +
                 NAME + " TEXT," +
                 EMAIL + " TEXT," +
                 ADDRESS + " TEXT," +
@@ -108,31 +113,121 @@ class SQLiteHelper (context: Context) :
         db?.execSQL(providerTable)
     }
 
+    fun insertProvider(provider: ProviderModel): Long {
+        val db = this.writableDatabase
+
+        val contentValues = ContentValues()
+        contentValues.put(LEGAL_IDENTITY, provider.legalIdentity)
+        contentValues.put(NAME, provider.name)
+        contentValues.put(EMAIL, provider.email)
+        contentValues.put(ADDRESS, provider.address)
+        contentValues.put(CONTACT, provider.contact)
+
+        val success = db.insert(TBL_PROVIDER, null, contentValues)
+        db.close()
+        return success
+    }
+
+    fun getAllProviderTable(): ArrayList<ProviderModel> {
+        val providersList: ArrayList<ProviderModel> = ArrayList()
+        val selectQuery = "SELECT * FROM $TBL_PROVIDER"
+        val db = this.readableDatabase
+
+        val cursor: Cursor?
+
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            db.execSQL(selectQuery)
+            return ArrayList()
+        }
+
+        var legalIdentity: Int
+        var name: String
+        var email: String
+        var address: String
+        var contact: String
+
+        if (cursor.moveToFirst()) {
+            do {
+                legalIdentity = cursor.getInt(cursor.getColumnIndex(LEGAL_IDENTITY))
+                name = cursor.getString(cursor.getColumnIndex(NAME))
+                email = cursor.getString(cursor.getColumnIndex(EMAIL))
+                address = cursor.getString(cursor.getColumnIndex(ADDRESS))
+                contact = cursor.getString(cursor.getColumnIndex(CONTACT))
+
+                val provider = ProviderModel(legalIdentity = legalIdentity, name = name, email = email, address = address, contact = contact)
+                providersList.add(provider)
+            } while (cursor.moveToNext())
+        }
+
+        return providersList
+    }
+
+    fun updateProvider(provider: ProviderModel): Int {
+        val db = this.writableDatabase
+
+        val contentValues = ContentValues()
+
+        contentValues.put(LEGAL_IDENTITY, provider.legalIdentity)
+        contentValues.put(NAME, provider.name)
+        contentValues.put(EMAIL, provider.email)
+        contentValues.put(ADDRESS, provider.address)
+        contentValues.put(CONTACT, provider.contact)
+
+        val success = db.update(TBL_PROVIDER, contentValues, LEGAL_IDENTITY + "=" + provider.legalIdentity, null)
+        db.close()
+        return success
+    }
+
+    fun deleteProvider(legalIdentity: Int): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(LEGAL_IDENTITY, legalIdentity)
+
+        val success = db.delete(TBL_PROVIDER, "legal_identity=$legalIdentity", null)
+        db.close()
+        return success
+    }
+
+    // End of Provider Table methods
+    // #############################################################################################
+    // Start of InputProduct Table methods
+
     private fun createInputProductTable(db: SQLiteDatabase?) {
         val inputProductTable = ("CREATE TABLE " + TBL_INPUT_PRODUCT + " (" +
                 NAME + " TEXT," +
                 BRAND + " TEXT," +
-                PRICE + " TEXT," +
+                PRICE + " INTEGER," +
                 " PRIMARY KEY(" + NAME + "," + BRAND + "))")
 
         db?.execSQL(inputProductTable)
     }
 
+    // End of InputProduct Table methods
+    // #############################################################################################
+    // Start of Worker Table methods
+
     private fun createWorkerTable(db: SQLiteDatabase?) {
         val workerTable = ("CREATE TABLE " + TBL_WORKER + " (" +
-                ID + " TEXT PRIMARY KEY," +
+                ID + " INTEGER PRIMARY KEY," +
                 NAME + " TEXT," +
                 L_NAME1 + " TEXT," +
                 L_NAME2 + " TEXT," +
-                BIRTHDATE + " TEXT," +
-                AGE + " TEXT," +
+                BIRTHDATE + " TEXT," + // DATE
+                AGE + " INTEGER," +
                 ROL + " TEXT," +
                 PAYMENT_METHOD + " TEXT," +
                 PASSWORD + " TEXT," +
-                START_DATE + " TEXT" + ")")
+                START_DATE + " TEXT" + ")") // DATE
 
         db?.execSQL(workerTable)
     }
+
+    // End of Worker Table methods
+    // #############################################################################################
+    // Start of BranchOffice Table methods
 
     private fun createBranchOfficeTable(db: SQLiteDatabase?) {
         val branchOfficeTable = ("CREATE TABLE " + TBL_BRANCH_OFFICE + " (" +
@@ -141,47 +236,59 @@ class SQLiteHelper (context: Context) :
                 PROVINCE + " TEXT," +
                 CANTON + " TEXT," +
                 DISTRICT + " TEXT," +
-                OPEN_DATE + " TEXT" + ")")
+                OPEN_DATE + " TEXT" + ")") // DATE
 
         db?.execSQL(branchOfficeTable)
     }
 
+    // End of BranchOffice Table methods
+    // #############################################################################################
+    // Start of Wash Table methods
+
     private fun createWashTable(db: SQLiteDatabase?) {
         val washTable = ("CREATE TABLE " + TBL_WASH + " (" +
                 TYPE + " TEXT PRIMARY KEY," +
-                PRICE + " TEXT," +
-                ESTIMATED_DURATION + " TEXT," +
-                POINTS_NEEDED + " TEXT," +
-                POINTS_AWARDED + " TEXT," +
-                WASHER + " TEXT," +
-                POLISHER + " TEXT" + ")")
+                PRICE + " INTEGER," +
+                ESTIMATED_DURATION + " INTEGER," +
+                POINTS_NEEDED + " INTEGER," +
+                POINTS_AWARDED + " INTEGER," +
+                WASHER + " INTEGER," + // BIT
+                POLISHER + " INTEGER" + ")") // BIT
 
         db?.execSQL(washTable)
     }
 
+    // End of Wash Table methods
+    // #############################################################################################
+    // Start of Client Table methods
+
     private fun createClientTable(db: SQLiteDatabase?) {
         val clientTable = ("CREATE TABLE " + TBL_CLIENT + " (" +
-                ID + " TEXT PRIMARY KEY," +
+                ID + " INTEGER PRIMARY KEY," +
                 NAME + " TEXT," +
                 L_NAME1 + " TEXT," +
                 L_NAME2 + " TEXT," +
                 USER + " TEXT," +
                 PASSWORD + " TEXT," +
                 EMAIL + " TEXT," +
-                POINTS + " TEXT" + ")")
+                POINTS + " INTEGER" + ")")
 
         db?.execSQL(clientTable)
     }
 
+    // End of Client Table methods
+    // #############################################################################################
+    // Start of Appointment Table methods
+
     private fun createAppointmentTable(db: SQLiteDatabase?) {
         val appointmentTable = ("CREATE TABLE " + TBL_APPOINTMENT + " (" +
-                CAR_ID + " TEXT," +
-                DATE + " TEXT," +
+                CAR_ID + " INTEGER," +
+                DATE + " TEXT," + // DATETIME
                 TYPE + " TEXT," +
                 NAME + " TEXT," +
-                ID + " TEXT," +
+                ID + " INTEGER," +
                 BRANCH_NAME + " TEXT," +
-                " PRIMARY KEY (" + CAR_ID + "," + DATE + ")," +
+                " PRIMARY KEY (" + CAR_ID + "," + DATE + "," + BRANCH_NAME + ")," +
                 " FOREIGN KEY (" + TYPE + ") REFERENCES " + TBL_WASH + "(" + TYPE + ")," +
                 " FOREIGN KEY (" + NAME + ") REFERENCES " + TBL_CLIENT + "(" + NAME + ")," +
                 " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_CLIENT + "(" + ID + ")," +
@@ -191,26 +298,38 @@ class SQLiteHelper (context: Context) :
 
     }
 
+    // End of Appointment Table methods
+    // #############################################################################################
+    // Start of WorkerBranch Table methods
+
     private fun createWorkerBranchTable(db: SQLiteDatabase?) {
         val workerBranch = ("CREATE TABLE " + TBL_WORKER_BRANCH + " (" +
-                ID + " TEXT," +
+                ID + " INTEGER," +
                 NAME + " TEXT," +
-                START_DATE + " TEXT," +
+                START_DATE + " TEXT," + // DATE
                 " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_WORKER + "(" + ID + ")," +
                 " FOREIGN KEY (" + NAME + ") REFERENCES " + TBL_BRANCH_OFFICE + "(" + NAME + "))")
 
         db?.execSQL(workerBranch)
     }
 
+    // End of WorkerBranch Table methods
+    // #############################################################################################
+    // Start of ProviderInput Table methods
+
     private fun createProviderInputTable(db: SQLiteDatabase?) {
         val providerInputTable = ("CREATE TABLE " + TBL_PROVIDER_INPUT + " (" +
-                LEGAL_IDENTITY + " TEXT," +
+                LEGAL_IDENTITY + " INTEGER," +
                 NAME + " TEXT," +
                 " FOREIGN KEY (" + LEGAL_IDENTITY + ") REFERENCES " + TBL_PROVIDER + "(" + LEGAL_IDENTITY + ")," +
                 " FOREIGN KEY (" + NAME + ") REFERENCES " + TBL_INPUT_PRODUCT + "(" + NAME + "))")
 
         db?.execSQL(providerInputTable)
     }
+
+    // End of ProviderInput Table methods
+    // #############################################################################################
+    // Start of InputProductWash Table methods
 
     private fun createInputProductWashTable(db: SQLiteDatabase?) {
         val inputProductWashTable = ("CREATE TABLE " + TBL_INPUT_PRODUCT_WASH + " (" +
@@ -224,30 +343,42 @@ class SQLiteHelper (context: Context) :
         db?.execSQL(inputProductWashTable)
     }
 
+    // End of InputProductWash Table methods
+    // #############################################################################################
+    // Start of ClientPhone Table methods
+
     private fun createClientPhoneTable(db: SQLiteDatabase?) {
         val clientPhoneTable = ("CREATE TABLE " + TBL_CLIENT_PHONE + " (" +
-                ID + " TEXT," +
+                ID + " INTEGER," +
                 PHONE + " TEXT," +
                 " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_CLIENT + "(" + ID + "))")
 
         db?.execSQL(clientPhoneTable)
     }
 
+    // End of ClientPhone Table methods
+    // #############################################################################################
+    // Start of ClientAddress Table methods
+
     private fun createClientAddressTable(db: SQLiteDatabase?) {
         val clientAddressTable = ("CREATE TABLE " + TBL_CLIENT_ADDRESS + " (" +
-                ID + " TEXT," +
+                ID + " INTEGER," +
                 ADDRESS + " TEXT," +
                 " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_CLIENT + "(" + ID + "))")
 
         db?.execSQL(clientAddressTable)
     }
 
+    // End of ClientAddress Table methods
+    // #############################################################################################
+    // Start of AppointmentWorker Table methods
+
     private fun createAppointmentWorkerTable(db: SQLiteDatabase?) {
         val appointmentWorkerTable = ("CREATE TABLE " + TBL_APPOINTMENT_WORKER + " (" +
-                CAR_ID + " TEXT," +
-                DATE + " TEXT," +
+                CAR_ID + " INTEGER," +
+                DATE + " TEXT," + // DATETIME
                 BRANCH_NAME + " TEXT," +
-                ID + " TEXT," +
+                ID + " INTEGER," +
                 " FOREIGN KEY (" + CAR_ID + ") REFERENCES " + TBL_APPOINTMENT + "(" + CAR_ID + ")," +
                 " FOREIGN KEY (" + DATE + ") REFERENCES " + TBL_APPOINTMENT + "(" + DATE + ")," +
                 " FOREIGN KEY (" + BRANCH_NAME + ") REFERENCES " + TBL_BRANCH_OFFICE + "(" + NAME + ")," +
@@ -256,13 +387,17 @@ class SQLiteHelper (context: Context) :
         db?.execSQL(appointmentWorkerTable)
     }
 
+    // End of AppointmentWorker Table methods
+    // #############################################################################################
+    // Start of AppointmentInput Table methods
+
     private fun createAppointmentInputTable(db: SQLiteDatabase?) {
         val appointmentInputTable = ("CREATE TABLE " + TBL_APPOINTMENT_INPUT + " (" +
-                CAR_ID + " TEXT," +
-                DATE + " TEXT," +
+                CAR_ID + " INTEGER," +
+                DATE + " TEXT," + // DATETIME
                 PRODUCT_NAME + " TEXT," +
                 BRAND + " TEXT," +
-                AMOUNT + " TEXT," +
+                AMOUNT + " INTEGER," +
                 BRANCH_NAME + " TEXT," +
                 " FOREIGN KEY (" + CAR_ID + ") REFERENCES " + TBL_APPOINTMENT + "(" + CAR_ID + ")," +
                 " FOREIGN KEY (" + DATE + ") REFERENCES " + TBL_APPOINTMENT + "(" + DATE + ")," +
@@ -272,4 +407,6 @@ class SQLiteHelper (context: Context) :
 
         db?.execSQL(appointmentInputTable)
     }
+
+    // End of AppointmentInput Table methods
 }
