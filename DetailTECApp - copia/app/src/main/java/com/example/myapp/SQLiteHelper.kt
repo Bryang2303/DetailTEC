@@ -251,6 +251,31 @@ class SQLiteHelper (context: Context) :
         return productsList
     }
 
+    fun uppdateProduct(product: ProductModel): Int {
+        val db = this.writableDatabase
+
+        val contentValues = ContentValues()
+
+        contentValues.put(NAME, product.name)
+        contentValues.put(BRAND, product.brand)
+        contentValues.put(PRICE, product.price)
+
+        val success = db.update(TBL_INPUT_PRODUCT, contentValues, "name=" + product.name + " AND brand=" + product.brand, null)
+        db.close()
+        return success
+    }
+
+    fun deleteProduct(name: String, brand: String): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(NAME, name)
+        contentValues.put(BRAND, brand)
+
+        val success = db.delete(TBL_INPUT_PRODUCT, "name=$name AND brand=$brand", null)
+        db.close()
+        return success
+    }
+
     // End of InputProduct Table methods
     // #############################################################################################
     // Start of Worker Table methods
