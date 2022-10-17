@@ -205,6 +205,52 @@ class SQLiteHelper (context: Context) :
         db?.execSQL(inputProductTable)
     }
 
+    fun insertInputProduct(product: ProductModel): Long {
+        val db = this.writableDatabase
+
+        val contentValues = ContentValues()
+        contentValues.put(NAME, product.name)
+        contentValues.put(BRAND, product.brand)
+        contentValues.put(PRICE, product.price)
+
+        val success = db.insert(TBL_INPUT_PRODUCT, null, contentValues)
+        db.close()
+        return success
+    }
+
+    fun getAllProducts(): ArrayList<ProductModel> {
+        val productsList: ArrayList<ProductModel> = ArrayList()
+        val selectQuery = "SELECT * FROM $TBL_INPUT_PRODUCT"
+        val db = this.readableDatabase
+
+        val cursor: Cursor?
+
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            db.execSQL(selectQuery)
+            return ArrayList()
+        }
+
+        var name: String
+        var brand: String
+        var price: Int
+
+        if (cursor.moveToFirst()) {
+            do {
+                name = cursor.getString(cursor.getColumnIndex(NAME))
+                brand = cursor.getString(cursor.getColumnIndex(BRAND))
+                price = cursor.getInt(cursor.getColumnIndex(PRICE))
+
+                val product = ProductModel(name = name, brand = brand, price = price)
+                productsList.add(product)
+            } while (cursor.moveToNext())
+        }
+
+        return productsList
+    }
+
     // End of InputProduct Table methods
     // #############################################################################################
     // Start of Worker Table methods
