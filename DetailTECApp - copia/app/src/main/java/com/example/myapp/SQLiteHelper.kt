@@ -296,6 +296,26 @@ class SQLiteHelper (context: Context) :
         db?.execSQL(workerTable)
     }
 
+    fun insertWorker(worker: WorkerModel): Long {
+        val db = this.writableDatabase
+
+        val contentValues = ContentValues()
+        contentValues.put(ID, worker.id)
+        contentValues.put(NAME, worker.name)
+        contentValues.put(L_NAME1, worker.lastName1)
+        contentValues.put(L_NAME2, worker.lastName2)
+        contentValues.put(BIRTHDATE, worker.birthDate)
+        contentValues.put(AGE, worker.age)
+        contentValues.put(ROL, worker.rol)
+        contentValues.put(PAYMENT_METHOD, worker.paymentMethod)
+        contentValues.put(PASSWORD, worker.password)
+        contentValues.put(START_DATE, worker.startDate)
+
+        val success = db.insert(TBL_WORKER, null, contentValues)
+        db.close()
+        return success
+    }
+
     // End of Worker Table methods
     // #############################################################################################
     // Start of BranchOffice Table methods
