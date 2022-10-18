@@ -127,18 +127,7 @@ class SQLiteHelper (context: Context) :
 
     fun getAllProviderTable(): ArrayList<ProviderModel> {
         val providersList: ArrayList<ProviderModel> = ArrayList()
-        val selectQuery = "SELECT * FROM $TBL_PROVIDER"
-        val db = this.readableDatabase
-
-        val cursor: Cursor?
-
-        try {
-            cursor = db.rawQuery(selectQuery, null)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            db.execSQL(selectQuery)
-            return ArrayList()
-        }
+        val cursor = getFromDatabase(TBL_PROVIDER)
 
         var legalIdentity: Int
         var name: String
@@ -146,17 +135,19 @@ class SQLiteHelper (context: Context) :
         var address: String
         var contact: String
 
-        if (cursor.moveToFirst()) {
-            do {
-                legalIdentity = cursor.getInt(cursor.getColumnIndex(LEGAL_IDENTITY))
-                name = cursor.getString(cursor.getColumnIndex(NAME))
-                email = cursor.getString(cursor.getColumnIndex(EMAIL))
-                address = cursor.getString(cursor.getColumnIndex(ADDRESS))
-                contact = cursor.getString(cursor.getColumnIndex(CONTACT))
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    legalIdentity = cursor.getInt(cursor.getColumnIndex(LEGAL_IDENTITY))
+                    name = cursor.getString(cursor.getColumnIndex(NAME))
+                    email = cursor.getString(cursor.getColumnIndex(EMAIL))
+                    address = cursor.getString(cursor.getColumnIndex(ADDRESS))
+                    contact = cursor.getString(cursor.getColumnIndex(CONTACT))
 
-                val provider = ProviderModel(legalIdentity = legalIdentity, name = name, email = email, address = address, contact = contact)
-                providersList.add(provider)
-            } while (cursor.moveToNext())
+                    val provider = ProviderModel(legalIdentity = legalIdentity, name = name, email = email, address = address, contact = contact)
+                    providersList.add(provider)
+                } while (cursor.moveToNext())
+            }
         }
 
         return providersList
@@ -213,32 +204,23 @@ class SQLiteHelper (context: Context) :
 
     fun getAllProducts(): ArrayList<ProductModel> {
         val productsList: ArrayList<ProductModel> = ArrayList()
-        val selectQuery = "SELECT * FROM $TBL_INPUT_PRODUCT"
-        val db = this.readableDatabase
-
-        val cursor: Cursor?
-
-        try {
-            cursor = db.rawQuery(selectQuery, null)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            db.execSQL(selectQuery)
-            return ArrayList()
-        }
+        val cursor = getFromDatabase(TBL_INPUT_PRODUCT)
 
         var name: String
         var brand: String
         var price: Int
 
-        if (cursor.moveToFirst()) {
-            do {
-                name = cursor.getString(cursor.getColumnIndex(NAME))
-                brand = cursor.getString(cursor.getColumnIndex(BRAND))
-                price = cursor.getInt(cursor.getColumnIndex(PRICE))
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    name = cursor.getString(cursor.getColumnIndex(NAME))
+                    brand = cursor.getString(cursor.getColumnIndex(BRAND))
+                    price = cursor.getInt(cursor.getColumnIndex(PRICE))
 
-                val product = ProductModel(name = name, brand = brand, price = price)
-                productsList.add(product)
-            } while (cursor.moveToNext())
+                    val product = ProductModel(name = name, brand = brand, price = price)
+                    productsList.add(product)
+                } while (cursor.moveToNext())
+            }
         }
 
         return productsList
@@ -307,18 +289,7 @@ class SQLiteHelper (context: Context) :
 
     fun getAllWorkers(): ArrayList<WorkerModel> {
         val workersList: ArrayList<WorkerModel> = ArrayList()
-        val selectQuery = "SELECT * FROM $TBL_WORKER"
-        val db = this.readableDatabase
-
-        val cursor: Cursor?
-
-        try {
-            cursor = db.rawQuery(selectQuery, null)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            db.execSQL(selectQuery)
-            return ArrayList()
-        }
+        val cursor = getFromDatabase(TBL_WORKER)
 
         var id: Int
         var name: String
@@ -331,24 +302,27 @@ class SQLiteHelper (context: Context) :
         var password: String
         var startDate: String
 
-        if (cursor.moveToFirst()) {
-            do {
-                id = cursor.getInt(cursor.getColumnIndex(ID))
-                name = cursor.getString(cursor.getColumnIndex(NAME))
-                lastName1 = cursor.getString(cursor.getColumnIndex(L_NAME1))
-                lastName2 = cursor.getString(cursor.getColumnIndex(L_NAME2))
-                birthDate = cursor.getString(cursor.getColumnIndex(BIRTHDATE))
-                age = cursor.getInt(cursor.getColumnIndex(AGE))
-                rol = cursor.getString(cursor.getColumnIndex(ROL))
-                paymentMethod = cursor.getString(cursor.getColumnIndex(PAYMENT_METHOD))
-                password = cursor.getString(cursor.getColumnIndex(PASSWORD))
-                startDate = cursor.getString(cursor.getColumnIndex(START_DATE))
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    id = cursor.getInt(cursor.getColumnIndex(ID))
+                    name = cursor.getString(cursor.getColumnIndex(NAME))
+                    lastName1 = cursor.getString(cursor.getColumnIndex(L_NAME1))
+                    lastName2 = cursor.getString(cursor.getColumnIndex(L_NAME2))
+                    birthDate = cursor.getString(cursor.getColumnIndex(BIRTHDATE))
+                    age = cursor.getInt(cursor.getColumnIndex(AGE))
+                    rol = cursor.getString(cursor.getColumnIndex(ROL))
+                    paymentMethod = cursor.getString(cursor.getColumnIndex(PAYMENT_METHOD))
+                    password = cursor.getString(cursor.getColumnIndex(PASSWORD))
+                    startDate = cursor.getString(cursor.getColumnIndex(START_DATE))
 
-                val worker = WorkerModel(id = id, name = name, lastName1 = lastName1, lastName2 = lastName2,
-                    birthDate = birthDate, age = age, rol = rol, paymentMethod = paymentMethod, password = password, startDate = startDate)
+                    val worker = WorkerModel(id = id, name = name, lastName1 = lastName1, lastName2 = lastName2,
+                        birthDate = birthDate, age = age, rol = rol, paymentMethod = paymentMethod, password = password,
+                        startDate = startDate)
 
-                workersList.add(worker)
-            } while (cursor.moveToNext())
+                    workersList.add(worker)
+                } while (cursor.moveToNext())
+            }
         }
 
         return workersList
@@ -413,6 +387,37 @@ class SQLiteHelper (context: Context) :
         return insertOnDatabase(contentValues, TBL_BRANCH_OFFICE)
     }
 
+    fun getAllBranchOffices(): ArrayList<BranchOfficeModel> {
+        val branchOfficesList: ArrayList<BranchOfficeModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_BRANCH_OFFICE)
+
+        var name: String
+        var phone: String
+        var province: String
+        var canton: String
+        var district: String
+        var openDate: String
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    name = cursor.getString(cursor.getColumnIndex(NAME))
+                    phone = cursor.getString(cursor.getColumnIndex(PHONE))
+                    province = cursor.getString(cursor.getColumnIndex(PROVINCE))
+                    canton = cursor.getString(cursor.getColumnIndex(CANTON))
+                    district = cursor.getString(cursor.getColumnIndex(DISTRICT))
+                    openDate = cursor.getString(cursor.getColumnIndex(OPEN_DATE))
+
+                    val branchOffice = BranchOfficeModel(name = name, phone = phone, province = province,
+                        canton = canton, district = district, openDate = openDate)
+                    branchOfficesList.add(branchOffice)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return branchOfficesList
+    }
+
     // End of BranchOffice Table methods
     // #############################################################################################
     // Start of Wash Table methods
@@ -441,6 +446,40 @@ class SQLiteHelper (context: Context) :
         contentValues.put(POLISHER, wash.polisher)
 
         return insertOnDatabase(contentValues, TBL_WASH)
+    }
+
+    fun getAllWashes(): ArrayList<WashModel> {
+        val washesList: ArrayList<WashModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_WASH)
+
+        var type: String
+        var price: Int
+        var estimatedDuration: Int
+        var pointsNeeded: Int
+        var pointsAwarded: Int
+        var washer: Int
+        var polisher: Int
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    type = cursor.getString(cursor.getColumnIndex(TYPE))
+                    price = cursor.getInt(cursor.getColumnIndex(PRICE))
+                    estimatedDuration = cursor.getInt(cursor.getColumnIndex(ESTIMATED_DURATION))
+                    pointsNeeded = cursor.getInt(cursor.getColumnIndex(POINTS_NEEDED))
+                    pointsAwarded = cursor.getInt(cursor.getColumnIndex(POINTS_AWARDED))
+                    washer = cursor.getInt(cursor.getColumnIndex(WASHER))
+                    polisher = cursor.getInt(cursor.getColumnIndex(POLISHER))
+
+                    val wash = WashModel(type = type, price = price, estimatedDuration = estimatedDuration,
+                        pointsNeeded = pointsNeeded, pointsAwarded = pointsAwarded,
+                        washer = washer, polisher = polisher)
+                    washesList.add(wash)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return washesList
     }
 
     // End of Wash Table methods
@@ -473,6 +512,43 @@ class SQLiteHelper (context: Context) :
         contentValues.put(POINTS, client.points)
 
         return insertOnDatabase(contentValues, TBL_CLIENT)
+    }
+
+    fun getAllClients(): ArrayList<ClientModel> {
+        val clientsList: ArrayList<ClientModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_CLIENT)
+
+        var id: Int
+        var name: String
+        var lastName1: String
+        var lastName2: String
+        var user: String
+        var password: String
+        var email: String
+        var points: Int
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    id = cursor.getInt(cursor.getColumnIndex(ID))
+                    name = cursor.getString(cursor.getColumnIndex(NAME))
+                    lastName1 = cursor.getString(cursor.getColumnIndex(L_NAME1))
+                    lastName2 = cursor.getString(cursor.getColumnIndex(L_NAME2))
+                    user = cursor.getString(cursor.getColumnIndex(USER))
+                    password = cursor.getString(cursor.getColumnIndex(PASSWORD))
+                    email = cursor.getString(cursor.getColumnIndex(EMAIL))
+                    points = cursor.getInt(cursor.getColumnIndex(POINTS))
+
+                    val client = ClientModel(
+                        id = id, name = name, lastName1 = lastName1, lastName2 = lastName2,
+                        user = user, password = password, email = email, points = points
+                    )
+                    clientsList.add(client)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return clientsList
     }
 
     // End of Client Table methods
@@ -509,6 +585,37 @@ class SQLiteHelper (context: Context) :
         return insertOnDatabase(contentValues, TBL_APPOINTMENT)
     }
 
+    fun getAllAppointments(): ArrayList<AppointmentModel> {
+        val appointmentsList: ArrayList<AppointmentModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_APPOINTMENT)
+
+        var carId: Int
+        var date: String
+        var type: String
+        var name: String
+        var id: Int
+        var branchName: String
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    carId = cursor.getInt(cursor.getColumnIndex(CAR_ID))
+                    date = cursor.getString(cursor.getColumnIndex(DATE))
+                    type = cursor.getString(cursor.getColumnIndex(TYPE))
+                    name = cursor.getString(cursor.getColumnIndex(NAME))
+                    id = cursor.getInt(cursor.getColumnIndex(ID))
+                    branchName = cursor.getString(cursor.getColumnIndex(BRANCH_NAME))
+
+                    val appointment = AppointmentModel(carId = carId, date = date, type = type,
+                        name = name, id = id, branchName = branchName)
+                    appointmentsList.add(appointment)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return appointmentsList
+    }
+
     // End of Appointment Table methods
     // #############################################################################################
     // Start of WorkerBranch Table methods
@@ -533,6 +640,30 @@ class SQLiteHelper (context: Context) :
         return insertOnDatabase(contentValues, TBL_WORKER_BRANCH)
     }
 
+    fun getAllWorkerBranches(): ArrayList<WorkerBranchModel> {
+        val workerBranchesList: ArrayList<WorkerBranchModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_WORKER_BRANCH)
+
+        var id: Int
+        var name: String
+        var startDate: String
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    id = cursor.getInt(cursor.getColumnIndex(ID))
+                    name = cursor.getString(cursor.getColumnIndex(NAME))
+                    startDate = cursor.getString(cursor.getColumnIndex(START_DATE))
+
+                    val workerBranch = WorkerBranchModel(id = id, name = name, startDate = startDate)
+                    workerBranchesList.add(workerBranch)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return workerBranchesList
+    }
+
     // End of WorkerBranch Table methods
     // #############################################################################################
     // Start of ProviderInput Table methods
@@ -553,6 +684,28 @@ class SQLiteHelper (context: Context) :
         contentValues.put(NAME, providerInput.name)
 
         return insertOnDatabase(contentValues, TBL_PROVIDER_INPUT)
+    }
+
+    fun getAllProviderInputs(): ArrayList<ProviderInputModel> {
+        val providerInputsList: ArrayList<ProviderInputModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_PROVIDER_INPUT)
+
+        var legalIdentity: Int
+        var name: String
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    legalIdentity = cursor.getInt(cursor.getColumnIndex(LEGAL_IDENTITY))
+                    name = cursor.getString(cursor.getColumnIndex(NAME))
+
+                    val providerInput = ProviderInputModel(legalIdentity = legalIdentity, name = name)
+                    providerInputsList.add(providerInput)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return providerInputsList
     }
 
     // End of ProviderInput Table methods
@@ -580,6 +733,30 @@ class SQLiteHelper (context: Context) :
         return insertOnDatabase(contentValues, TBL_INPUT_PRODUCT_WASH)
     }
 
+    fun getAllInputProductWashes(): ArrayList<InputProductWashModel> {
+        val inputProductWashesList: ArrayList<InputProductWashModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_INPUT_PRODUCT_WASH)
+
+        var name: String
+        var type: String
+        var brand: String
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    name = cursor.getString(cursor.getColumnIndex(NAME))
+                    type = cursor.getString(cursor.getColumnIndex(TYPE))
+                    brand = cursor.getString(cursor.getColumnIndex(BRAND))
+
+                    val inputProductWash = InputProductWashModel(name = name, type = type, brand = brand)
+                    inputProductWashesList.add(inputProductWash)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return inputProductWashesList
+    }
+
     // End of InputProductWash Table methods
     // #############################################################################################
     // Start of ClientPhone Table methods
@@ -601,6 +778,28 @@ class SQLiteHelper (context: Context) :
         return insertOnDatabase(contentValues, TBL_CLIENT_PHONE)
     }
 
+    fun getAllClientPhones(): ArrayList<ClientPhoneModel> {
+        val clientPhonesList: ArrayList<ClientPhoneModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_CLIENT_PHONE)
+
+        var id: Int
+        var phone: String
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    id = cursor.getInt(cursor.getColumnIndex(ID))
+                    phone = cursor.getString(cursor.getColumnIndex(PHONE))
+
+                    val clientPhone = ClientPhoneModel(id = id, phone = phone)
+                    clientPhonesList.add(clientPhone)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return clientPhonesList
+    }
+
     // End of ClientPhone Table methods
     // #############################################################################################
     // Start of ClientAddress Table methods
@@ -620,6 +819,28 @@ class SQLiteHelper (context: Context) :
         contentValues.put(ADDRESS, clientAddress.address)
 
         return insertOnDatabase(contentValues, TBL_CLIENT_ADDRESS)
+    }
+
+    fun getAllClientAddresses(): ArrayList<ClientAddressModel> {
+        val clientAddressesList: ArrayList<ClientAddressModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_CLIENT_ADDRESS)
+
+        var id: Int
+        var address: String
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    id = cursor.getInt(cursor.getColumnIndex(ID))
+                    address = cursor.getString(cursor.getColumnIndex(ADDRESS))
+
+                    val clientAddress = ClientAddressModel(id = id, address = address)
+                    clientAddressesList.add(clientAddress)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return clientAddressesList
     }
 
     // End of ClientAddress Table methods
@@ -648,6 +869,32 @@ class SQLiteHelper (context: Context) :
         contentValues.put(ID, appointmentWorker.id)
 
         return insertOnDatabase(contentValues, TBL_APPOINTMENT_WORKER)
+    }
+
+    fun getAllAppointmentWorkers(): ArrayList<AppointmentWorkerModel> {
+        val appointmentWorkersList: ArrayList<AppointmentWorkerModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_APPOINTMENT_WORKER)
+
+        var carId: Int
+        var date: String
+        var branchName: String
+        var id: Int
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    carId = cursor.getInt(cursor.getColumnIndex(CAR_ID))
+                    date = cursor.getString(cursor.getColumnIndex(DATE))
+                    branchName = cursor.getString(cursor.getColumnIndex(BRANCH_NAME))
+                    id = cursor.getInt(cursor.getColumnIndex(ID))
+
+                    val appointmentWorker = AppointmentWorkerModel(carId = carId, date = date, branchName = branchName, id = id)
+                    appointmentWorkersList.add(appointmentWorker)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return appointmentWorkersList
     }
 
     // End of AppointmentWorker Table methods
@@ -683,6 +930,38 @@ class SQLiteHelper (context: Context) :
         return insertOnDatabase(contentValues, TBL_APPOINTMENT_INPUT)
     }
 
+    fun getAllAppointmentInputs(): ArrayList<AppointmentInputModel> {
+        val appointmentInputsList: ArrayList<AppointmentInputModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_APPOINTMENT_INPUT)
+
+        var carId: Int
+        var date: String
+        var productName: String
+        var brand: String
+        var amount: Int
+        var branchName: String
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    carId = cursor.getInt(cursor.getColumnIndex(CAR_ID))
+                    date = cursor.getString(cursor.getColumnIndex(DATE))
+                    productName = cursor.getString(cursor.getColumnIndex(PRODUCT_NAME))
+                    brand = cursor.getString(cursor.getColumnIndex(BRAND))
+                    amount = cursor.getInt(cursor.getColumnIndex(AMOUNT))
+                    branchName = cursor.getString(cursor.getColumnIndex(BRANCH_NAME))
+
+                    val appointmentInput = AppointmentInputModel(carId = carId, date = date, productName = productName,
+                        brand = brand, amount = amount, branchName = branchName)
+
+                    appointmentInputsList.add(appointmentInput)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return appointmentInputsList
+    }
+
     // End of AppointmentInput Table methods
 
     private fun insertOnDatabase(contentValues: ContentValues, tableName: String): Long {
@@ -691,5 +970,22 @@ class SQLiteHelper (context: Context) :
         db.close()
 
         return success
+    }
+
+    private fun getFromDatabase(tableName: String): Cursor? {
+        val selectQuery = "SELECT * FROM $tableName"
+        val db = this.readableDatabase
+
+        val cursor: Cursor
+
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            db.execSQL(selectQuery)
+            return null
+        }
+
+        return cursor
     }
 }
