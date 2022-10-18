@@ -154,8 +154,6 @@ class SQLiteHelper (context: Context) :
     }
 
     fun updateProvider(provider: ProviderModel): Int {
-        val db = this.writableDatabase
-
         val contentValues = ContentValues()
 
         contentValues.put(LEGAL_IDENTITY, provider.legalIdentity)
@@ -164,9 +162,7 @@ class SQLiteHelper (context: Context) :
         contentValues.put(ADDRESS, provider.address)
         contentValues.put(CONTACT, provider.contact)
 
-        val success = db.update(TBL_PROVIDER, contentValues, LEGAL_IDENTITY + "=" + provider.legalIdentity, null)
-        db.close()
-        return success
+        return updateInDatabase(TBL_PROVIDER, contentValues, LEGAL_IDENTITY + "=" + provider.legalIdentity)
     }
 
     fun deleteProvider(legalIdentity: Int): Int {
@@ -227,17 +223,13 @@ class SQLiteHelper (context: Context) :
     }
 
     fun updateProduct(product: ProductModel): Int {
-        val db = this.writableDatabase
-
         val contentValues = ContentValues()
 
         contentValues.put(NAME, product.name)
         contentValues.put(BRAND, product.brand)
         contentValues.put(PRICE, product.price)
 
-        val success = db.update(TBL_INPUT_PRODUCT, contentValues, "name=" + product.name + " AND brand=" + product.brand, null)
-        db.close()
-        return success
+        return updateInDatabase(TBL_INPUT_PRODUCT, contentValues, "name=" + product.name + " AND brand=" + product.brand)
     }
 
     fun deleteProduct(name: String, brand: String): Int {
@@ -329,8 +321,6 @@ class SQLiteHelper (context: Context) :
     }
 
     fun updateWorker(worker: WorkerModel): Int {
-        val db = this.writableDatabase
-
         val contentValues = ContentValues()
 
         contentValues.put(ID, worker.id)
@@ -344,9 +334,7 @@ class SQLiteHelper (context: Context) :
         contentValues.put(PASSWORD, worker.password)
         contentValues.put(START_DATE, worker.startDate)
 
-        val success = db.update(TBL_WORKER, contentValues, ID + "=" + worker.id, null)
-        db.close()
-        return success
+        return updateInDatabase(TBL_WORKER, contentValues, ID + "=" + worker.id)
     }
 
     fun deleteWorker(id: Int): Int {
@@ -418,6 +406,19 @@ class SQLiteHelper (context: Context) :
         return branchOfficesList
     }
 
+    fun updateBranchOffice(branchOffice: BranchOfficeModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(NAME, branchOffice.name)
+        contentValues.put(PHONE, branchOffice.phone)
+        contentValues.put(PROVINCE, branchOffice.province)
+        contentValues.put(CANTON, branchOffice.canton)
+        contentValues.put(DISTRICT, branchOffice.district)
+        contentValues.put(OPEN_DATE, branchOffice.openDate)
+
+        return updateInDatabase(TBL_BRANCH_OFFICE, contentValues, NAME + "=" + branchOffice.name)
+    }
+
     // End of BranchOffice Table methods
     // #############################################################################################
     // Start of Wash Table methods
@@ -480,6 +481,20 @@ class SQLiteHelper (context: Context) :
         }
 
         return washesList
+    }
+
+    fun updateWash(wash: WashModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(TYPE, wash.type)
+        contentValues.put(PRICE, wash.price)
+        contentValues.put(ESTIMATED_DURATION, wash.estimatedDuration)
+        contentValues.put(POINTS_NEEDED, wash.pointsNeeded)
+        contentValues.put(POINTS_AWARDED, wash.pointsAwarded)
+        contentValues.put(WASHER, wash.washer)
+        contentValues.put(POLISHER, wash.polisher)
+
+        return updateInDatabase(TBL_WASH, contentValues, TYPE + "=" + wash.type)
     }
 
     // End of Wash Table methods
@@ -551,6 +566,21 @@ class SQLiteHelper (context: Context) :
         return clientsList
     }
 
+    fun updateClient(client: ClientModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(ID, client.id)
+        contentValues.put(NAME, client.name)
+        contentValues.put(L_NAME1, client.lastName1)
+        contentValues.put(L_NAME2, client.lastName2)
+        contentValues.put(USER, client.user)
+        contentValues.put(PASSWORD, client.password)
+        contentValues.put(EMAIL, client.email)
+        contentValues.put(POINTS, client.points)
+
+        return updateInDatabase(TBL_CLIENT, contentValues, ID + "=" + client.id)
+    }
+
     // End of Client Table methods
     // #############################################################################################
     // Start of Appointment Table methods
@@ -616,6 +646,20 @@ class SQLiteHelper (context: Context) :
         return appointmentsList
     }
 
+    fun updateAppointment(appointment: AppointmentModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(CAR_ID, appointment.carId)
+        contentValues.put(DATE, appointment.date)
+        contentValues.put(TYPE, appointment.type)
+        contentValues.put(NAME, appointment.name)
+        contentValues.put(ID, appointment.id)
+        contentValues.put(BRANCH_NAME, appointment.branchName)
+
+        return updateInDatabase(TBL_APPOINTMENT, contentValues,
+            CAR_ID + "=" + appointment.carId + " AND " + DATE + "=" + appointment.date + " AND " + BRANCH_NAME + "=" + appointment.branchName)
+    }
+
     // End of Appointment Table methods
     // #############################################################################################
     // Start of WorkerBranch Table methods
@@ -664,6 +708,16 @@ class SQLiteHelper (context: Context) :
         return workerBranchesList
     }
 
+    fun updateWorkerBranch(workerBranch: WorkerBranchModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(ID, workerBranch.id)
+        contentValues.put(NAME, workerBranch.name)
+        contentValues.put(START_DATE, workerBranch.startDate)
+
+        return updateInDatabase(TBL_WORKER_BRANCH, contentValues, ID + "=" + workerBranch.id)
+    }
+
     // End of WorkerBranch Table methods
     // #############################################################################################
     // Start of ProviderInput Table methods
@@ -706,6 +760,15 @@ class SQLiteHelper (context: Context) :
         }
 
         return providerInputsList
+    }
+
+    fun updateProviderInput(providerInput: ProviderInputModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(LEGAL_IDENTITY, providerInput.legalIdentity)
+        contentValues.put(NAME, providerInput.name)
+
+        return updateInDatabase(TBL_PROVIDER_INPUT, contentValues, LEGAL_IDENTITY + "=" + providerInput.legalIdentity)
     }
 
     // End of ProviderInput Table methods
@@ -757,6 +820,16 @@ class SQLiteHelper (context: Context) :
         return inputProductWashesList
     }
 
+    fun updateInputProductWash(inputProductWash: InputProductWashModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(NAME, inputProductWash.name)
+        contentValues.put(TYPE, inputProductWash.type)
+        contentValues.put(BRAND, inputProductWash.brand)
+
+        return updateInDatabase(TBL_INPUT_PRODUCT_WASH, contentValues, NAME + "=" + inputProductWash.name)
+    }
+
     // End of InputProductWash Table methods
     // #############################################################################################
     // Start of ClientPhone Table methods
@@ -800,6 +873,15 @@ class SQLiteHelper (context: Context) :
         return clientPhonesList
     }
 
+    fun updateClientPhone(clientPhone: ClientPhoneModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(ID, clientPhone.id)
+        contentValues.put(PHONE, clientPhone.phone)
+
+        return updateInDatabase(TBL_CLIENT_PHONE, contentValues, ID + "=" + clientPhone.id)
+    }
+
     // End of ClientPhone Table methods
     // #############################################################################################
     // Start of ClientAddress Table methods
@@ -841,6 +923,15 @@ class SQLiteHelper (context: Context) :
         }
 
         return clientAddressesList
+    }
+
+    fun updateClientAddress(clientAddress: ClientAddressModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(ID, clientAddress.id)
+        contentValues.put(ADDRESS, clientAddress.address)
+
+        return updateInDatabase(TBL_CLIENT_ADDRESS, contentValues, ID + "=" + clientAddress.id)
     }
 
     // End of ClientAddress Table methods
@@ -895,6 +986,17 @@ class SQLiteHelper (context: Context) :
         }
 
         return appointmentWorkersList
+    }
+
+    fun updateAppointmentWorker(appointmentWorker: AppointmentWorkerModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(CAR_ID, appointmentWorker.carId)
+        contentValues.put(DATE, appointmentWorker.date)
+        contentValues.put(BRANCH_NAME, appointmentWorker.branchName)
+        contentValues.put(ID, appointmentWorker.id)
+
+        return updateInDatabase(TBL_APPOINTMENT_WORKER, contentValues, CAR_ID + "=" + appointmentWorker.carId)
     }
 
     // End of AppointmentWorker Table methods
@@ -962,7 +1064,21 @@ class SQLiteHelper (context: Context) :
         return appointmentInputsList
     }
 
+    fun updateAppointmentInput(appointmentInput: AppointmentInputModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(CAR_ID, appointmentInput.carId)
+        contentValues.put(DATE, appointmentInput.date)
+        contentValues.put(PRODUCT_NAME, appointmentInput.productName)
+        contentValues.put(BRAND, appointmentInput.brand)
+        contentValues.put(AMOUNT, appointmentInput.amount)
+        contentValues.put(BRANCH_NAME, appointmentInput.branchName)
+
+        return updateInDatabase(TBL_APPOINTMENT_INPUT, contentValues, CAR_ID + "=" + appointmentInput.carId)
+    }
+
     // End of AppointmentInput Table methods
+    // #############################################################################################
 
     private fun insertOnDatabase(contentValues: ContentValues, tableName: String): Long {
         val db = this.writableDatabase
@@ -987,5 +1103,13 @@ class SQLiteHelper (context: Context) :
         }
 
         return cursor
+    }
+
+    private fun updateInDatabase(tableName: String, contentValues: ContentValues, whereClause: String): Int {
+        val db = writableDatabase
+        val success = db.update(tableName, contentValues, whereClause, null)
+        db.close()
+
+        return success
     }
 }
