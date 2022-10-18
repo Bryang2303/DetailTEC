@@ -1,4 +1,4 @@
-package com.example.myapp
+package com.example.myapp.models
 
 class ProviderModel(
     var legalIdentity: Int = 0,
