@@ -166,13 +166,7 @@ class SQLiteHelper (context: Context) :
     }
 
     fun deleteProvider(legalIdentity: Int): Int {
-        val db = this.writableDatabase
-        val contentValues = ContentValues()
-        contentValues.put(LEGAL_IDENTITY, legalIdentity)
-
-        val success = db.delete(TBL_PROVIDER, "legal_identity=$legalIdentity", null)
-        db.close()
-        return success
+        return deleteFromDatabase(TBL_PROVIDER, "legal_identity=$legalIdentity")
     }
 
     // End of Provider Table methods
@@ -233,14 +227,7 @@ class SQLiteHelper (context: Context) :
     }
 
     fun deleteProduct(name: String, brand: String): Int {
-        val db = this.writableDatabase
-        val contentValues = ContentValues()
-        contentValues.put(NAME, name)
-        contentValues.put(BRAND, brand)
-
-        val success = db.delete(TBL_INPUT_PRODUCT, "name=$name AND brand=$brand", null)
-        db.close()
-        return success
+        return deleteFromDatabase(TBL_INPUT_PRODUCT, "name=$name AND brand=$brand")
     }
 
     // End of InputProduct Table methods
@@ -338,13 +325,7 @@ class SQLiteHelper (context: Context) :
     }
 
     fun deleteWorker(id: Int): Int {
-        val db = this.writableDatabase
-        val contentValues = ContentValues()
-        contentValues.put(ID, id)
-
-        val success = db.delete(TBL_WORKER, "id=$id", null)
-        db.close()
-        return success
+        return deleteFromDatabase(TBL_WORKER, "id=$id")
     }
 
     // End of Worker Table methods
@@ -417,6 +398,10 @@ class SQLiteHelper (context: Context) :
         contentValues.put(OPEN_DATE, branchOffice.openDate)
 
         return updateInDatabase(TBL_BRANCH_OFFICE, contentValues, NAME + "=" + branchOffice.name)
+    }
+
+    fun deleteBranchOffice(name: String): Int {
+        return deleteFromDatabase(TBL_BRANCH_OFFICE, "name=$name")
     }
 
     // End of BranchOffice Table methods
@@ -495,6 +480,10 @@ class SQLiteHelper (context: Context) :
         contentValues.put(POLISHER, wash.polisher)
 
         return updateInDatabase(TBL_WASH, contentValues, TYPE + "=" + wash.type)
+    }
+
+    fun deleteWash(type: String): Int {
+        return deleteFromDatabase(TBL_WASH, "type=$type")
     }
 
     // End of Wash Table methods
@@ -581,6 +570,10 @@ class SQLiteHelper (context: Context) :
         return updateInDatabase(TBL_CLIENT, contentValues, ID + "=" + client.id)
     }
 
+    fun deleteClient(id: Int): Int {
+        return deleteFromDatabase(TBL_CLIENT, "id=$id")
+    }
+
     // End of Client Table methods
     // #############################################################################################
     // Start of Appointment Table methods
@@ -660,6 +653,10 @@ class SQLiteHelper (context: Context) :
             CAR_ID + "=" + appointment.carId + " AND " + DATE + "=" + appointment.date + " AND " + BRANCH_NAME + "=" + appointment.branchName)
     }
 
+    fun deleteAppointment(carId: Int, date: String, branchName: String): Int {
+        return deleteFromDatabase(TBL_APPOINTMENT, "car_id=$carId AND date=$date AND branch_name=$branchName")
+    }
+
     // End of Appointment Table methods
     // #############################################################################################
     // Start of WorkerBranch Table methods
@@ -718,6 +715,10 @@ class SQLiteHelper (context: Context) :
         return updateInDatabase(TBL_WORKER_BRANCH, contentValues, ID + "=" + workerBranch.id)
     }
 
+    fun deleteWorkerBranch(id: Int): Int {
+        return deleteFromDatabase(TBL_WORKER_BRANCH, "id=$id")
+    }
+
     // End of WorkerBranch Table methods
     // #############################################################################################
     // Start of ProviderInput Table methods
@@ -769,6 +770,10 @@ class SQLiteHelper (context: Context) :
         contentValues.put(NAME, providerInput.name)
 
         return updateInDatabase(TBL_PROVIDER_INPUT, contentValues, LEGAL_IDENTITY + "=" + providerInput.legalIdentity)
+    }
+
+    fun deleteProviderInput(legalIdentity: Int): Int {
+        return deleteFromDatabase(TBL_PROVIDER_INPUT, "legal_identity=$legalIdentity")
     }
 
     // End of ProviderInput Table methods
@@ -830,6 +835,10 @@ class SQLiteHelper (context: Context) :
         return updateInDatabase(TBL_INPUT_PRODUCT_WASH, contentValues, NAME + "=" + inputProductWash.name)
     }
 
+    fun deleteInputProductWash(name: String): Int {
+        return deleteFromDatabase(TBL_INPUT_PRODUCT_WASH, "name=$name")
+    }
+
     // End of InputProductWash Table methods
     // #############################################################################################
     // Start of ClientPhone Table methods
@@ -882,6 +891,10 @@ class SQLiteHelper (context: Context) :
         return updateInDatabase(TBL_CLIENT_PHONE, contentValues, ID + "=" + clientPhone.id)
     }
 
+    fun deleteClientPhone(id: Int): Int {
+        return deleteFromDatabase(TBL_CLIENT_PHONE, "id=$id")
+    }
+
     // End of ClientPhone Table methods
     // #############################################################################################
     // Start of ClientAddress Table methods
@@ -932,6 +945,10 @@ class SQLiteHelper (context: Context) :
         contentValues.put(ADDRESS, clientAddress.address)
 
         return updateInDatabase(TBL_CLIENT_ADDRESS, contentValues, ID + "=" + clientAddress.id)
+    }
+
+    fun deleteClientAddress(id: Int): Int {
+        return deleteFromDatabase(TBL_CLIENT_ADDRESS, "id=$id")
     }
 
     // End of ClientAddress Table methods
@@ -997,6 +1014,10 @@ class SQLiteHelper (context: Context) :
         contentValues.put(ID, appointmentWorker.id)
 
         return updateInDatabase(TBL_APPOINTMENT_WORKER, contentValues, CAR_ID + "=" + appointmentWorker.carId)
+    }
+
+    fun deleteAppointmentWorker(carId: Int): Int {
+        return deleteFromDatabase(TBL_APPOINTMENT_WORKER, "car_id=$carId")
     }
 
     // End of AppointmentWorker Table methods
@@ -1077,6 +1098,10 @@ class SQLiteHelper (context: Context) :
         return updateInDatabase(TBL_APPOINTMENT_INPUT, contentValues, CAR_ID + "=" + appointmentInput.carId)
     }
 
+    fun deleteAppointmentInput(carId: Int): Int {
+        return deleteFromDatabase(TBL_APPOINTMENT_INPUT, "car_id=$carId")
+    }
+
     // End of AppointmentInput Table methods
     // #############################################################################################
 
@@ -1108,6 +1133,14 @@ class SQLiteHelper (context: Context) :
     private fun updateInDatabase(tableName: String, contentValues: ContentValues, whereClause: String): Int {
         val db = writableDatabase
         val success = db.update(tableName, contentValues, whereClause, null)
+        db.close()
+
+        return success
+    }
+
+    private fun deleteFromDatabase(tableName: String, whereClause: String): Int {
+        val db = this.writableDatabase
+        val success = db.delete(tableName, whereClause, null)
         db.close()
 
         return success
