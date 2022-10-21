@@ -4,16 +4,22 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.ImageButton
 import android.widget.Toast
+import com.example.myapp.models.ClientAddressModel
+import com.example.myapp.models.ClientModel
+import com.example.myapp.models.ClientPhoneModel
+
 // Clase de la ventana de inicio de sesion
 class SinginActivity : AppCompatActivity() {
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_singin)
+
+        // Recibe base de datos
+        val database = SQLiteHelper(applicationContext)
 
         // Boton para volver a la ventana Main
         var backSingInB = findViewById<TextView>(R.id.backSinginButton)
@@ -41,7 +47,7 @@ class SinginActivity : AppCompatActivity() {
         //var addlocationImageButton = findViewById (R.id.addlocationImageButton)
 
         var clientData: ArrayList<TextView> = arrayListOf()
-        clientData.addAll(listOf(fName,lName,lName2,id,email,singinUsername,singinPassword,locations,phones))
+        clientData.addAll(listOf(fName,id,email,singinUsername,singinPassword,locations,phones))
 
         // Contador de ubicaciones del cliente, al ser multivaluado, el algoritmo permite la adicion o eliminacion de tantas direcciones como sea posible
         var locationsCount = 0
@@ -172,16 +178,40 @@ class SinginActivity : AppCompatActivity() {
         // Boton para proceder luego del registro
         var proceedSingInB = findViewById<TextView>(R.id.SinginAcceptButton)
         proceedSingInB.setOnClickListener {
+            var readyToSave = true
 
             for (dataInput in clientData){
                 if (dataInput.text == "" || dataInput.text.isEmpty()){
+                    readyToSave = false
                     showErrorSingin()
                     break
-                } else {
-                    val intent = Intent(this,LoginActivity::class.java)
-                    startActivity(intent)
-                    //dataInput.text = "FUNCIONA"
+                }
+//                else {
+//                    val intent = Intent(this,LoginActivity::class.java)
+//                    startActivity(intent)
+//                    //dataInput.text = "FUNCIONA"
+//
+//                }
+            }
 
+            // Almacenamiento en base de datos
+            if (readyToSave) {
+                var name = clientData[0].text.toString()
+                var id = Integer.parseInt(clientData[1].text.toString())
+                var email = clientData[2].text.toString()
+                var username = clientData[3].text.toString()
+                var password = clientData[4].text.toString()
+
+                val client = ClientModel(id = id, name = name, user = username, password = password,
+                    email = email, points = 0)
+
+                val success = database.insertClient(client)
+
+                if (success > 0) {
+                    addPhonesAndLocations(locationsArray, phonesArray, database, id)
+                    createdMessage()
+                } else {
+                    existingMessage()
                 }
             }
 
@@ -189,6 +219,26 @@ class SinginActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    private fun addPhonesAndLocations(
+        locationsArray: ArrayList<String>,
+        phonesArray: ArrayList<String>,
+        database: SQLiteHelper,
+        id: Int
+    ) {
+        var counter = 0
+        for (i in locationsArray) {
+            val clientAddress = ClientAddressModel(id = id, address =  locationsArray[counter])
+            database.insertClientAddress(clientAddress)
+            counter++
+        }
+        counter = 0
+        for (i in phonesArray) {
+            val clientPhone = ClientPhoneModel(id = id, phone = phonesArray[counter])
+            database.insertClientPhone(clientPhone)
+            counter++
+        }
     }
 
     fun maping(){
@@ -211,6 +261,16 @@ class SinginActivity : AppCompatActivity() {
     // Si el registro falla, muestra un mensaje de error
     fun showErrorSingin(){
         Toast.makeText(this,"Asegurese de haber completado todos sus datos", Toast.LENGTH_SHORT).show()
+    }
+
+    // Mensaje al registrar un usuario
+    fun createdMessage(){
+        Toast.makeText(this,"Usuario creado de manera exitosa", Toast.LENGTH_SHORT).show()
+    }
+
+    // Mensaje si el usuario ya existe en la base de datos
+    fun existingMessage(){
+        Toast.makeText(this,"El usuario ingresado ya existe", Toast.LENGTH_SHORT).show()
     }
 
 

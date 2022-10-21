@@ -33,21 +33,24 @@ class ClientAppointmentActivity : AppCompatActivity() {
         setContentView(R.layout.activity_client_appointment)
 
         var usernameAppointmentClient = findViewById<TextView>(R.id.usernameAppointmentTextViewClient)
+
+        // Almacenar el nombre del usuario para poder mantenerse logeado
+        val bundle = intent.extras
+        val name = bundle?.get("INTENT_NAME")
+        var clientPosition = bundle?.get("CLIENT_POSITION")
+
         // Boton para volver a la ventana del menu del cliente
         var backClientAppointmentB = findViewById<TextView>(R.id.backAppointmentButtonClient)
         backClientAppointmentB.setOnClickListener {
             val intent = Intent(this,ClientMenuActivity::class.java)
             intent.putExtra("INTENT_NAME",usernameAppointmentClient.text)
+            intent.putExtra("CLIENT_POSITION", clientPosition.toString())
             startActivity(intent)
             //LoginActivity::class.java
         }
 
-
-
         var plateAppointmentClient = findViewById<TextView>(R.id.plateEditTextClient)
-        // Almacenar el nombre del usuario para poder mantenerse logeado
-        val bundle = intent.extras
-        val name = bundle?.get("INTENT_NAME")
+
         //var usernameClientAppointment = findViewById<TextView>(R.id.usernameAppointmentTextViewClient)
         usernameAppointmentClient.text = name.toString()
 

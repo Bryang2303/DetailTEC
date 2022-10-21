@@ -5,11 +5,23 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
+import com.example.myapp.models.ClientModel
+
 // Clase de la ventana de los datos del Cliente
 class ClientDataActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_data)
+
+        // Iniciar base de datos
+        val database = SQLiteHelper(applicationContext)
+        val clientsList: ArrayList<ClientModel> = database.getAllClients()
+
+        // Almacenar el nombre del usuario para poder mantenerse logeado
+        val bundle = intent.extras
+        var clientPosition = bundle?.get("CLIENT_POSITION")
+        val name = bundle?.get("INTENT_NAME")
+
 
         var usernameDataClient = findViewById<TextView>(R.id.usernameDataTextViewClient)
         // Boton para volver al menu del cliente
@@ -17,12 +29,12 @@ class ClientDataActivity : AppCompatActivity() {
         backClientDataB.setOnClickListener {
             val intent = Intent(this,ClientMenuActivity::class.java)
             intent.putExtra("INTENT_NAME",usernameDataClient.text)
+            intent.putExtra("CLIENT_POSITION", clientPosition.toString())
             startActivity(intent)
 
         }
+
         // Almacenar el nombre del usuario para poder mantenerse logeado
-        val bundle = intent.extras
-        val name = bundle?.get("INTENT_NAME")
         usernameDataClient.text = name.toString()
 
         // Cada uno de los datos del cliente, los tomados al momento de registrarse
@@ -39,6 +51,12 @@ class ClientDataActivity : AppCompatActivity() {
         var lName2 = findViewById<TextView>(R.id.lastNameEditText2Client)
         var id = findViewById<TextView>(R.id.idEditTextClient)
         var email = findViewById<TextView>(R.id.emailEditTextClient)
+
+        // Coloca la informacion en pantalla
+        fName.text = clientsList.get(Integer.parseInt(clientPosition.toString())).name
+        id.text = clientsList.get(Integer.parseInt(clientPosition.toString())).id.toString()
+        email.text = clientsList.get(Integer.parseInt(clientPosition.toString())).email
+
         // Array de los datos del cliente
         var clientData2: ArrayList<TextView> = arrayListOf()
         clientData2.addAll(listOf(fName,lName,lName2,id,email,locations,phones))

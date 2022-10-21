@@ -6,10 +6,11 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.myapp.models.*
+import java.io.Serializable
 import java.lang.Exception
 
 class SQLiteHelper (context: Context) :
-    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), Serializable {
 
     companion object {
         private const val DATABASE_VERSION = 1
@@ -36,8 +37,6 @@ class SQLiteHelper (context: Context) :
         private const val BRAND = "brand"
         private const val PRICE = "price"
         private const val ID = "id"
-        private const val L_NAME1 = "l_name1"
-        private const val L_NAME2 = "l_name2"
         private const val BIRTHDATE = "birthdate"
         private const val AGE = "age" //Derived attribute
         private const val ROL = "rol"
@@ -144,7 +143,8 @@ class SQLiteHelper (context: Context) :
                     address = cursor.getString(cursor.getColumnIndex(ADDRESS))
                     contact = cursor.getString(cursor.getColumnIndex(CONTACT))
 
-                    val provider = ProviderModel(legalIdentity = legalIdentity, name = name, email = email, address = address, contact = contact)
+                    val provider = ProviderModel(legalIdentity = legalIdentity, name = name,
+                        email = email, address = address, contact = contact)
                     providersList.add(provider)
                 } while (cursor.moveToNext())
             }
@@ -238,8 +238,6 @@ class SQLiteHelper (context: Context) :
         val workerTable = ("CREATE TABLE " + TBL_WORKER + " (" +
                 ID + " INTEGER PRIMARY KEY," +
                 NAME + " TEXT," +
-                L_NAME1 + " TEXT," +
-                L_NAME2 + " TEXT," +
                 BIRTHDATE + " TEXT," + // DATE
                 AGE + " INTEGER," +
                 ROL + " TEXT," +
@@ -254,8 +252,6 @@ class SQLiteHelper (context: Context) :
         val contentValues = ContentValues()
         contentValues.put(ID, worker.id)
         contentValues.put(NAME, worker.name)
-        contentValues.put(L_NAME1, worker.lastName1)
-        contentValues.put(L_NAME2, worker.lastName2)
         contentValues.put(BIRTHDATE, worker.birthDate)
         contentValues.put(AGE, worker.age)
         contentValues.put(ROL, worker.rol)
@@ -272,8 +268,6 @@ class SQLiteHelper (context: Context) :
 
         var id: Int
         var name: String
-        var lastName1: String
-        var lastName2 : String
         var birthDate: String
         var age: Int
         var rol: String
@@ -286,8 +280,6 @@ class SQLiteHelper (context: Context) :
                 do {
                     id = cursor.getInt(cursor.getColumnIndex(ID))
                     name = cursor.getString(cursor.getColumnIndex(NAME))
-                    lastName1 = cursor.getString(cursor.getColumnIndex(L_NAME1))
-                    lastName2 = cursor.getString(cursor.getColumnIndex(L_NAME2))
                     birthDate = cursor.getString(cursor.getColumnIndex(BIRTHDATE))
                     age = cursor.getInt(cursor.getColumnIndex(AGE))
                     rol = cursor.getString(cursor.getColumnIndex(ROL))
@@ -295,9 +287,8 @@ class SQLiteHelper (context: Context) :
                     password = cursor.getString(cursor.getColumnIndex(PASSWORD))
                     startDate = cursor.getString(cursor.getColumnIndex(START_DATE))
 
-                    val worker = WorkerModel(id = id, name = name, lastName1 = lastName1, lastName2 = lastName2,
-                        birthDate = birthDate, age = age, rol = rol, paymentMethod = paymentMethod, password = password,
-                        startDate = startDate)
+                    val worker = WorkerModel(id = id, name = name, birthDate = birthDate, age = age,
+                        rol = rol, paymentMethod = paymentMethod, password = password, startDate = startDate)
 
                     workersList.add(worker)
                 } while (cursor.moveToNext())
@@ -312,8 +303,6 @@ class SQLiteHelper (context: Context) :
 
         contentValues.put(ID, worker.id)
         contentValues.put(NAME, worker.name)
-        contentValues.put(L_NAME1, worker.lastName1)
-        contentValues.put(L_NAME2, worker.lastName2)
         contentValues.put(BIRTHDATE, worker.birthDate)
         contentValues.put(AGE, worker.age)
         contentValues.put(ROL, worker.rol)
@@ -494,8 +483,6 @@ class SQLiteHelper (context: Context) :
         val clientTable = ("CREATE TABLE " + TBL_CLIENT + " (" +
                 ID + " INTEGER PRIMARY KEY," +
                 NAME + " TEXT," +
-                L_NAME1 + " TEXT," +
-                L_NAME2 + " TEXT," +
                 USER + " TEXT," +
                 PASSWORD + " TEXT," +
                 EMAIL + " TEXT," +
@@ -508,8 +495,6 @@ class SQLiteHelper (context: Context) :
         val contentValues = ContentValues()
         contentValues.put(ID, client.id)
         contentValues.put(NAME, client.name)
-        contentValues.put(L_NAME1, client.lastName1)
-        contentValues.put(L_NAME2, client.lastName2)
         contentValues.put(USER, client.user)
         contentValues.put(PASSWORD, client.password)
         contentValues.put(EMAIL, client.email)
@@ -524,8 +509,6 @@ class SQLiteHelper (context: Context) :
 
         var id: Int
         var name: String
-        var lastName1: String
-        var lastName2: String
         var user: String
         var password: String
         var email: String
@@ -536,16 +519,14 @@ class SQLiteHelper (context: Context) :
                 do {
                     id = cursor.getInt(cursor.getColumnIndex(ID))
                     name = cursor.getString(cursor.getColumnIndex(NAME))
-                    lastName1 = cursor.getString(cursor.getColumnIndex(L_NAME1))
-                    lastName2 = cursor.getString(cursor.getColumnIndex(L_NAME2))
                     user = cursor.getString(cursor.getColumnIndex(USER))
                     password = cursor.getString(cursor.getColumnIndex(PASSWORD))
                     email = cursor.getString(cursor.getColumnIndex(EMAIL))
                     points = cursor.getInt(cursor.getColumnIndex(POINTS))
 
                     val client = ClientModel(
-                        id = id, name = name, lastName1 = lastName1, lastName2 = lastName2,
-                        user = user, password = password, email = email, points = points
+                        id = id, name = name, user = user, password = password, email = email,
+                        points = points
                     )
                     clientsList.add(client)
                 } while (cursor.moveToNext())
@@ -560,8 +541,6 @@ class SQLiteHelper (context: Context) :
 
         contentValues.put(ID, client.id)
         contentValues.put(NAME, client.name)
-        contentValues.put(L_NAME1, client.lastName1)
-        contentValues.put(L_NAME2, client.lastName2)
         contentValues.put(USER, client.user)
         contentValues.put(PASSWORD, client.password)
         contentValues.put(EMAIL, client.email)
@@ -590,7 +569,7 @@ class SQLiteHelper (context: Context) :
                 " FOREIGN KEY (" + TYPE + ") REFERENCES " + TBL_WASH + "(" + TYPE + ")," +
                 " FOREIGN KEY (" + NAME + ") REFERENCES " + TBL_CLIENT + "(" + NAME + ")," +
                 " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_CLIENT + "(" + ID + ")," +
-                " FOREIGN KEY (" + BRANCH_NAME + ") REFERENCES" + TBL_BRANCH_OFFICE + "(" + NAME + "))")
+                " FOREIGN KEY (" + BRANCH_NAME + ") REFERENCES " + TBL_BRANCH_OFFICE + "(" + NAME + "))")
 
         db?.execSQL(appointmentTable)
 

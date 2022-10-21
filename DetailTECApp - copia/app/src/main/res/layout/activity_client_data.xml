@@ -166,7 +166,7 @@
         app:layout_constraintVertical_bias="0.303"
         tools:ignore="MissingConstraints" />
 
-    <EditText
+    <TextView
         android:id="@+id/idEditTextClient"
         android:layout_width="382dp"
         android:layout_height="48dp"
@@ -175,7 +175,8 @@
         android:hint="Cedula"
         android:inputType="none"
         android:paddingStart="12dp"
-        android:textSize="16dp"
+        android:paddingTop="9dp"
+        android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.551"

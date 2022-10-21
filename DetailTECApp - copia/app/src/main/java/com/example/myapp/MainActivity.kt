@@ -13,6 +13,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Inicio de la base de datos
+        val database = SQLiteHelper(applicationContext)
 
         // Texto de bienvenida
         var HelloText = findViewById<TextView>(R.id.Hellotxt)
@@ -20,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         var logInB = findViewById<TextView>(R.id.loginButton)
         logInB.setOnClickListener {
             val intent = Intent(this,LoginActivity::class.java)
+//            intent.putExtra("database", database)
             startActivity(intent)
             //LoginActivity::class.java
         }
@@ -27,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         var singInB = findViewById<TextView>(R.id.singinButton)
         singInB.setOnClickListener {
             val intent = Intent(this,SinginActivity::class.java)
+//            intent.putExtra("database", database)
             startActivity(intent)
             //LoginActivity::class.java
         }
@@ -171,3 +175,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+

@@ -11,17 +11,19 @@ class ClientPointsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_client_points)
 
         var usernamePointsClient = findViewById<TextView>(R.id.usernamePointsTextViewClient)
+        val bundle = intent.extras
+        val name = bundle?.get("INTENT_NAME")
+        var clientPosition = bundle?.get("CLIENT_POSITION")
 
         var backClientPointsB = findViewById<TextView>(R.id.backPointsButtonClient)
         backClientPointsB.setOnClickListener {
             val intent = Intent(this,ClientMenuActivity::class.java)
             intent.putExtra("INTENT_NAME",usernamePointsClient.text)
+            intent.putExtra("CLIENT_POSITION", clientPosition.toString())
             startActivity(intent)
 
         }
 
-        val bundle = intent.extras
-        val name = bundle?.get("INTENT_NAME")
         usernamePointsClient.text = name.toString()
     }
 }
