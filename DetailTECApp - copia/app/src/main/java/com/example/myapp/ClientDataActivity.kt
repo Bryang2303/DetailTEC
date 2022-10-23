@@ -3,9 +3,13 @@ package com.example.myapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
+import com.example.myapp.models.ClientAddressModel
 import com.example.myapp.models.ClientModel
+import com.example.myapp.models.ClientPhoneModel
 
 // Clase de la ventana de los datos del Cliente
 class ClientDataActivity : AppCompatActivity() {
@@ -66,6 +70,7 @@ class ClientDataActivity : AppCompatActivity() {
 
         var locationsArray: ArrayList<String> = arrayListOf()
         var indexLocationsArray: ArrayList<String> = arrayListOf()
+
         // Boton para agregar una direccion nueva
         var addlocationSinginIB = findViewById<ImageButton>(R.id.addlocationImageButtonClient)
         addlocationSinginIB.setOnClickListener {
@@ -80,6 +85,7 @@ class ClientDataActivity : AppCompatActivity() {
                 locationsCount++
             } else {
                 //locationsMap[locationsCount] = newLocation.text.toString()
+                locationsCount = locationsArray.size + 1
                 locationsArray.add(newLocation.text.toString())
                 indexLocationsArray.add((locationsCount+1).toString())
 
@@ -142,6 +148,7 @@ class ClientDataActivity : AppCompatActivity() {
                 phonesCount++
             } else {
                 //locationsMap[locationsCount] = newLocation.text.toString()
+                phonesCount = phonesArray.size
                 phonesArray.add(newPhone.text.toString())
                 indexPhonesArray.add((phonesCount+1).toString())
 
@@ -188,5 +195,133 @@ class ClientDataActivity : AppCompatActivity() {
             }
 
         }
+
+        var clientPhones: ArrayList<ClientPhoneModel> = database.getAllClientPhones()
+        var clientAddresses: ArrayList<ClientAddressModel> = database.getAllClientAddresses()
+
+        var positionCounter = 0
+        var itemsCounter = 0
+        for (i in clientPhones) {
+            if (id.text.toString() == clientPhones.get(positionCounter).id.toString()) {
+                if (phones.text == "" || phones.text.isEmpty()) {
+                    phones.text = (itemsCounter+1).toString() + ". " + clientPhones.get(positionCounter).phone
+                    phonesArray.add(clientPhones.get(positionCounter).phone)
+                    itemsCounter++
+                } else {
+                    phones.text = phones.text.toString() + "\r\n" + (itemsCounter+1).toString() + ". " + clientPhones.get(positionCounter).phone
+                    itemsCounter++
+                }
+            }
+
+            positionCounter++
+        }
+
+        positionCounter = 0
+        itemsCounter = 0
+        for (i in clientAddresses) {
+            if (id.text.toString() == clientAddresses.get(positionCounter).id.toString()) {
+                if (locations.text == "" || phones.text.isEmpty()) {
+                    locations.text = (itemsCounter+1).toString() + ". " + clientAddresses.get(positionCounter).address
+                    locationsArray.add(clientAddresses.get(positionCounter).address)
+                    itemsCounter++
+                } else {
+                    locations.text = locations.text.toString() + "\r\n" + (itemsCounter+1).toString() + ". " + clientAddresses.get(positionCounter).address
+                    itemsCounter++
+                }
+            }
+
+            positionCounter++
+        }
+
+        var updateClientDataB = findViewById<Button>(R.id.dataAcceptButtonClient)
+        updateClientDataB.setOnClickListener {
+            val clientPos = Integer.parseInt(clientPosition.toString())
+            var id = clientsList.get(clientPos).id
+            var name = fName.text.toString()
+            var username = usernameDataClient.text.toString()
+            var password = clientsList.get(clientPos).password
+            var email = email.text.toString()
+            var points = clientsList.get(clientPos).points
+
+            val client = ClientModel(id = id, name = name, user = username, password = password,
+                email = email, points = points)
+
+            updateClientPhones(database, id, phonesArray)
+
+            positionCounter = 0
+            for (i in locationsArray) {
+                val clientAddress = ClientAddressModel(id = id, address = locationsArray.get(positionCounter))
+//                database.insertClientAddress(clientAddress)
+                positionCounter++
+            }
+
+            if (database.updateClient(client) < 0) {
+                showErrorMessage()
+            } else {
+                showUpdatedMessage()
+            }
+        }
+    }
+
+    fun updateClientPhones(database: SQLiteHelper, id: Int, phones: ArrayList<String>) {
+        // Revisar números existentes
+        val phonesList = database.getAllClientPhones()
+        var firstCounter = 0
+        var notExisting = true
+        for (i in phonesList) {
+            var secondCounter = 0
+            while (secondCounter < phones.size && notExisting) {
+                if (id == phonesList.get(firstCounter).id && phonesList.get(firstCounter).phone == phones.get(secondCounter)) {
+                    notExisting = false
+                }
+                secondCounter++
+            }
+
+            if (notExisting) {
+                database.deleteClientPhone(id, phonesList.get(firstCounter).phone)
+            }
+            notExisting = true
+            firstCounter++
+        }
+
+        firstCounter = 0
+        notExisting = true
+        for (i in phones) {
+            var secondCounter = 0
+            while (secondCounter < phonesList.size && notExisting) {
+                if (id == phonesList.get(secondCounter).id && phones.get(firstCounter) == phonesList.get(secondCounter).phone) {
+                    notExisting = false
+                }
+
+                secondCounter++
+            }
+
+            if (notExisting) {
+                val clientPhone = ClientPhoneModel(id =  id, phone = phones.get(firstCounter))
+                database.insertClientPhone(clientPhone)
+            }
+            notExisting = true
+            firstCounter++
+        }
+    }
+
+    fun checkExistingPhone(database: SQLiteHelper, id: Int, phone: String): Boolean {
+        val clientPhoneList: ArrayList<ClientPhoneModel> = database.getAllClientPhones()
+        var counter = 0
+        for (i in clientPhoneList) {
+            if (clientPhoneList.get(counter).id == id && clientPhoneList.get(counter).phone == phone) {
+                return false
+            }
+            counter++
+        }
+        return true
+    }
+
+    fun showErrorMessage(){
+        Toast.makeText(this,"Ha ocurrido un error en la actualización de datos", Toast.LENGTH_SHORT).show()
+    }
+
+    fun showUpdatedMessage(){
+        Toast.makeText(this,"Datos actualizados exitósamente", Toast.LENGTH_SHORT).show()
     }
 }

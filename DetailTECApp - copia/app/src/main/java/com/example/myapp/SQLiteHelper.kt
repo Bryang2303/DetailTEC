@@ -826,6 +826,7 @@ class SQLiteHelper (context: Context) :
         val clientPhoneTable = ("CREATE TABLE " + TBL_CLIENT_PHONE + " (" +
                 ID + " INTEGER," +
                 PHONE + " TEXT," +
+                " PRIMARY KEY (" + ID + "," + PHONE + ")," +
                 " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_CLIENT + "(" + ID + "))")
 
         db?.execSQL(clientPhoneTable)
@@ -870,8 +871,8 @@ class SQLiteHelper (context: Context) :
         return updateInDatabase(TBL_CLIENT_PHONE, contentValues, ID + "=" + clientPhone.id)
     }
 
-    fun deleteClientPhone(id: Int): Int {
-        return deleteFromDatabase(TBL_CLIENT_PHONE, "id=$id")
+    fun deleteClientPhone(id: Int, phone: String): Int {
+        return deleteFromDatabase(TBL_CLIENT_PHONE, "id=$id AND phone=$phone")
     }
 
     // End of ClientPhone Table methods
@@ -882,6 +883,7 @@ class SQLiteHelper (context: Context) :
         val clientAddressTable = ("CREATE TABLE " + TBL_CLIENT_ADDRESS + " (" +
                 ID + " INTEGER," +
                 ADDRESS + " TEXT," +
+                " PRIMARY KEY (" + ID + "," + ADDRESS + ")," +
                 " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_CLIENT + "(" + ID + "))")
 
         db?.execSQL(clientAddressTable)

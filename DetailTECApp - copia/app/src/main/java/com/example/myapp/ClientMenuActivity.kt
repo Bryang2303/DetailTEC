@@ -46,6 +46,7 @@ class ClientMenuActivity : AppCompatActivity() {
         clientAppointmentB.setOnClickListener {
             val intent = Intent(this,ClientAppointmentActivity::class.java)
             intent.putExtra("INTENT_NAME",usernameClientMenu.text)
+            intent.putExtra("CLIENT_POSITION", clientPosition.toString())
             startActivity(intent)
 
         }
@@ -54,6 +55,7 @@ class ClientMenuActivity : AppCompatActivity() {
         clientPointsB.setOnClickListener {
             val intent = Intent(this,ClientPointsActivity::class.java)
             intent.putExtra("INTENT_NAME",usernameClientMenu.text)
+            intent.putExtra("CLIENT_POSITION", clientPosition.toString())
             startActivity(intent)
 
         }
