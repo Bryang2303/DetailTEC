@@ -3,6 +3,7 @@ package com.example.myapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -82,15 +83,15 @@ class ClientDataActivity : AppCompatActivity() {
 
                 //locationsMap[locationsCount] = newLocation.text.toString()
                 locations.text = (locationsCount+1).toString()+". " + newLocation.text.toString()
-                locationsCount++
+//                locationsCount++
             } else {
                 //locationsMap[locationsCount] = newLocation.text.toString()
-                locationsCount = locationsArray.size + 1
+                locationsCount = locationsArray.size
                 locationsArray.add(newLocation.text.toString())
                 indexLocationsArray.add((locationsCount+1).toString())
 
                 locations.text = locations.text.toString()+"\r\n"+ (locationsCount+1).toString()+". "+ newLocation.text.toString()
-                locationsCount++
+//                locationsCount++
             }
             newLocation.text = ""
         }
@@ -140,12 +141,13 @@ class ClientDataActivity : AppCompatActivity() {
         addphonesSinginIB.setOnClickListener {
 
             if (phones.text == "" || phones.text.isEmpty()){
+                phonesCount = phonesArray.size
                 phonesArray.add(newPhone.text.toString())
                 indexPhonesArray.add((phonesCount+1).toString())
 
                 //locationsMap[locationsCount] = newLocation.text.toString()
                 phones.text = (phonesCount+1).toString()+". " + newPhone.text.toString()
-                phonesCount++
+//                phonesCount++
             } else {
                 //locationsMap[locationsCount] = newLocation.text.toString()
                 phonesCount = phonesArray.size
@@ -153,7 +155,7 @@ class ClientDataActivity : AppCompatActivity() {
                 indexPhonesArray.add((phonesCount+1).toString())
 
                 phones.text = phones.text.toString()+"\r\n"+ (phonesCount+1).toString()+". "+ newPhone.text.toString()
-                phonesCount++
+//                phonesCount++
             }
             newPhone.text = ""
 
@@ -206,9 +208,12 @@ class ClientDataActivity : AppCompatActivity() {
                 if (phones.text == "" || phones.text.isEmpty()) {
                     phones.text = (itemsCounter+1).toString() + ". " + clientPhones.get(positionCounter).phone
                     phonesArray.add(clientPhones.get(positionCounter).phone)
+                    indexPhonesArray.add((itemsCounter+1).toString())
                     itemsCounter++
                 } else {
                     phones.text = phones.text.toString() + "\r\n" + (itemsCounter+1).toString() + ". " + clientPhones.get(positionCounter).phone
+                    phonesArray.add(clientPhones.get(positionCounter).phone)
+                    indexPhonesArray.add((itemsCounter+1).toString())
                     itemsCounter++
                 }
             }
@@ -223,9 +228,12 @@ class ClientDataActivity : AppCompatActivity() {
                 if (locations.text == "" || phones.text.isEmpty()) {
                     locations.text = (itemsCounter+1).toString() + ". " + clientAddresses.get(positionCounter).address
                     locationsArray.add(clientAddresses.get(positionCounter).address)
+                    indexLocationsArray.add((itemsCounter+1).toString())
                     itemsCounter++
                 } else {
                     locations.text = locations.text.toString() + "\r\n" + (itemsCounter+1).toString() + ". " + clientAddresses.get(positionCounter).address
+                    locationsArray.add(clientAddresses.get(positionCounter).address)
+                    indexLocationsArray.add((itemsCounter+1).toString())
                     itemsCounter++
                 }
             }
@@ -246,6 +254,7 @@ class ClientDataActivity : AppCompatActivity() {
             val client = ClientModel(id = id, name = name, user = username, password = password,
                 email = email, points = points)
 
+            updateClientAddresses(database, id, locationsArray)
             updateClientPhones(database, id, phonesArray)
 
             positionCounter = 0
@@ -263,7 +272,50 @@ class ClientDataActivity : AppCompatActivity() {
         }
     }
 
-    fun updateClientPhones(database: SQLiteHelper, id: Int, phones: ArrayList<String>) {
+    private fun updateClientAddresses(database: SQLiteHelper, id: Int, locations:ArrayList<String>) {
+        val locationList = database.getAllClientAddresses()
+        var firstCounter = 0
+        var notExisting = true
+        for (i in locationList) {
+            var secondCounter = 0
+            while (secondCounter < locations.size && notExisting) {
+                if (id == locationList.get(firstCounter).id && locationList.get(firstCounter).address == locations.get(secondCounter)) {
+                    notExisting = false
+                }
+
+                secondCounter++
+            }
+
+            if (notExisting) {
+                database.deleteClientAddress(id, locationList.get(firstCounter).address)
+            }
+            notExisting = true
+            firstCounter++
+        }
+
+        firstCounter = 0
+        notExisting = true
+        for (i in locations) {
+            var secondCounter = 0
+            while (secondCounter < locationList.size && notExisting) {
+                if (id == locationList.get(secondCounter).id && locations.get(firstCounter) == locationList.get(secondCounter).address) {
+                    notExisting = false
+                }
+
+                secondCounter++
+            }
+
+            if (notExisting) {
+                val clientAddress = ClientAddressModel(id = id, address = locations.get(firstCounter))
+                database.insertClientAddress(clientAddress)
+            }
+
+            notExisting = true
+            firstCounter++
+        }
+    }
+
+    private fun updateClientPhones(database: SQLiteHelper, id: Int, phones: ArrayList<String>) {
         // Revisar números existentes
         val phonesList = database.getAllClientPhones()
         var firstCounter = 0

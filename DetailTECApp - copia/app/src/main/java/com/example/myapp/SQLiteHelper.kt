@@ -928,8 +928,8 @@ class SQLiteHelper (context: Context) :
         return updateInDatabase(TBL_CLIENT_ADDRESS, contentValues, ID + "=" + clientAddress.id)
     }
 
-    fun deleteClientAddress(id: Int): Int {
-        return deleteFromDatabase(TBL_CLIENT_ADDRESS, "id=$id")
+    fun deleteClientAddress(id: Int, address: String): Int {
+        return deleteFromDatabase(TBL_CLIENT_ADDRESS, "id=$id AND address=$address")
     }
 
     // End of ClientAddress Table methods
