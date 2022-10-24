@@ -1,15 +1,21 @@
 package com.example.myapp
 
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
+import com.example.myapp.models.ClientModel
+
 // Clase de la ventana de la gestion de Clientes
 class RootClientmanagementActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_root_clientmanagement)
+
+        // Se inicia la base de datos
+        val database = SQLiteHelper(applicationContext)
 
         // Boton para volver al menu del Administrador
         var backClientDataRootB = findViewById<TextView>(R.id.backDataButtonRoot)
@@ -17,11 +23,6 @@ class RootClientmanagementActivity : AppCompatActivity() {
             val intent = Intent(this,RootMenuActivity::class.java)
             startActivity(intent)
             //LoginActivity::class.java
-        }
-        // Boton para buscar a un cliente por su nombre de usuario
-        var searchClientIB = findViewById<ImageButton>(R.id.searchClientImageButtonRoot)
-        searchClientIB.setOnClickListener {
-
         }
 
         // Datos de un respectivo cliente
@@ -34,7 +35,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
         var deletePhone = findViewById<TextView>(R.id.deletePhoneEditTextRoot)
 
         var fName = findViewById<TextView>(R.id.nameEditTextRoot)
-        var lName = findViewById<TextView>(R.id.lastNameEditTextRoot)
+        var username = findViewById<TextView>(R.id.usernameEditTextRoot)
         var lName2 = findViewById<TextView>(R.id.lastNameEditText2Root)
         var id = findViewById<TextView>(R.id.idEditTextRoot)
         var email = findViewById<TextView>(R.id.emailEditTextRoot)
@@ -42,7 +43,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
         //var addlocationImageButton = findViewById (R.id.addlocationImageButton)
 
         var clientData2: ArrayList<TextView> = arrayListOf()
-        clientData2.addAll(listOf(fName,lName,lName2,id,email,locations,phones))
+        clientData2.addAll(listOf(fName,username,email,locations,phones))
 
         // Contador de ubicaciones del cliente, al ser multivaluado, el algoritmo permite la adicion o eliminacion de tantas direcciones como sea posible
         var locationsCount = 0
@@ -170,6 +171,32 @@ class RootClientmanagementActivity : AppCompatActivity() {
                 //println(indexPhonesArray)
 
             }
+        }
+
+        // Boton para buscar a un cliente por su nombre de usuario
+        var searchClientIB = findViewById<ImageButton>(R.id.searchClientImageButtonRoot)
+        searchClientIB.setOnClickListener {
+            setClientInfo(database, Integer.parseInt(id.text.toString()), clientData2)
+        }
+    }
+
+    private fun setClientInfo(database: SQLiteHelper, id: Int, clientData: ArrayList<TextView>) {
+        val clientsList: ArrayList<ClientModel> = database.getAllClients()
+        var clientPosition = -1
+
+        var counter = 0
+        for (i in clientsList) {
+            if (clientsList.get(counter).id.toString() == id.toString()) {
+                clientPosition = counter
+            }
+
+            counter++
+        }
+
+        if (clientPosition > -1) {
+            clientData.get(0).text = clientsList.get(clientPosition).name
+            clientData.get(1).text = clientsList.get(clientPosition).user
+            clientData.get(2).text = clientsList.get(clientPosition).email
         }
     }
 }
