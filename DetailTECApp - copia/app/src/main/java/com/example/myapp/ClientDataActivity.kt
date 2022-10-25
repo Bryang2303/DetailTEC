@@ -257,12 +257,12 @@ class ClientDataActivity : AppCompatActivity() {
             updateClientAddresses(database, id, locationsArray)
             updateClientPhones(database, id, phonesArray)
 
-            positionCounter = 0
-            for (i in locationsArray) {
-                val clientAddress = ClientAddressModel(id = id, address = locationsArray.get(positionCounter))
-//                database.insertClientAddress(clientAddress)
-                positionCounter++
-            }
+//            positionCounter = 0
+//            for (i in locationsArray) {
+//                val clientAddress = ClientAddressModel(id = id, address = locationsArray.get(positionCounter))
+////                database.insertClientAddress(clientAddress)
+//                positionCounter++
+//            }
 
             if (database.updateClient(client) < 0) {
                 showErrorMessage()

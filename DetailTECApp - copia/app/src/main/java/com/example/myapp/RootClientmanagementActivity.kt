@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
+import com.example.myapp.models.ClientAddressModel
 import com.example.myapp.models.ClientModel
+import com.example.myapp.models.ClientPhoneModel
 
 // Clase de la ventana de la gestion de Clientes
 class RootClientmanagementActivity : AppCompatActivity() {
@@ -176,11 +178,55 @@ class RootClientmanagementActivity : AppCompatActivity() {
         // Boton para buscar a un cliente por su nombre de usuario
         var searchClientIB = findViewById<ImageButton>(R.id.searchClientImageButtonRoot)
         searchClientIB.setOnClickListener {
-            setClientInfo(database, Integer.parseInt(id.text.toString()), clientData2)
+            val clientPosition = setClientInfo(database, Integer.parseInt(id.text.toString()), clientData2)
+
+            if (clientPosition > -1) {
+                locations.text = ""
+                phones.text = ""
+                val locationsList: ArrayList<ClientAddressModel> = database.getAllClientAddresses()
+                val phonesList: ArrayList<ClientPhoneModel> = database.getAllClientPhones()
+                var counter = 0
+                var itemsCounter = 0
+                for (i in locationsList) {
+                    if (locationsList.get(counter).id.toString() == id.text.toString()) {
+                        locationsArray.add(locationsList.get(counter).address)
+                        if (locations.text == "" || locations.text.isEmpty()) {
+                            locations.text = (itemsCounter+1).toString() + ". " + locationsList.get(counter).address
+                            indexLocationsArray.add((itemsCounter+1).toString())
+                            itemsCounter++
+                        } else {
+                            locations.text = locations.text.toString() + "\r\n" + (itemsCounter+1).toString() + ". " + locationsList.get(counter).address
+                            indexLocationsArray.add((itemsCounter+1).toString())
+                            itemsCounter++
+                        }
+                    }
+
+                    counter++
+                }
+
+                counter = 0
+                itemsCounter = 0
+                for (i in phonesList) {
+                    if (phonesList.get(counter).id.toString() == id.text.toString()) {
+                        phonesArray.add(phonesList.get(counter).phone)
+                        if (phones.text == "" || phones.text.isEmpty()) {
+                            phones.text = (itemsCounter+1).toString() + ". " + phonesList.get(counter).phone
+                            indexPhonesArray.add((itemsCounter+1).toString())
+                            itemsCounter++
+                        } else {
+                            phones.text = phones.text.toString() + "\r\n" + (itemsCounter+1).toString() + ". " + phonesList.get(counter).phone
+                            indexPhonesArray.add((itemsCounter+1).toString())
+                            itemsCounter++
+                        }
+                    }
+
+                    counter++
+                }
+            }
         }
     }
 
-    private fun setClientInfo(database: SQLiteHelper, id: Int, clientData: ArrayList<TextView>) {
+    private fun setClientInfo(database: SQLiteHelper, id: Int, clientData: ArrayList<TextView>): Int {
         val clientsList: ArrayList<ClientModel> = database.getAllClients()
         var clientPosition = -1
 
@@ -198,5 +244,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
             clientData.get(1).text = clientsList.get(clientPosition).user
             clientData.get(2).text = clientsList.get(clientPosition).email
         }
+
+        return clientPosition
     }
 }
