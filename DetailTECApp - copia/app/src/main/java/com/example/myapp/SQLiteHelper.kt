@@ -101,6 +101,198 @@ class SQLiteHelper (context: Context) :
         onCreate(db)
     }
 
+    // Start of Client Table methods
+
+    private fun createClientTable(db: SQLiteDatabase?) {
+        val clientTable = ("CREATE TABLE " + TBL_CLIENT + " (" +
+                ID + " TEXT PRIMARY KEY," +
+                NAME + " TEXT," +
+                USER + " TEXT," +
+                PASSWORD + " TEXT," +
+                EMAIL + " TEXT," +
+                POINTS + " INTEGER" + ")")
+
+        db?.execSQL(clientTable)
+    }
+
+    fun insertClient(client: ClientModel): Long {
+        val contentValues = ContentValues()
+        contentValues.put(ID, client.id)
+        contentValues.put(NAME, client.name)
+        contentValues.put(USER, client.user)
+        contentValues.put(PASSWORD, client.password)
+        contentValues.put(EMAIL, client.email)
+        contentValues.put(POINTS, client.points)
+
+        return insertOnDatabase(contentValues, TBL_CLIENT)
+    }
+
+    fun getAllClients(): ArrayList<ClientModel> {
+        val clientsList: ArrayList<ClientModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_CLIENT)
+
+        var id: String
+        var name: String
+        var user: String
+        var password: String
+        var email: String
+        var points: Int
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    id = cursor.getString(cursor.getColumnIndex(ID))
+                    name = cursor.getString(cursor.getColumnIndex(NAME))
+                    user = cursor.getString(cursor.getColumnIndex(USER))
+                    password = cursor.getString(cursor.getColumnIndex(PASSWORD))
+                    email = cursor.getString(cursor.getColumnIndex(EMAIL))
+                    points = cursor.getInt(cursor.getColumnIndex(POINTS))
+
+                    val client = ClientModel(
+                        id = id, name = name, user = user, password = password, email = email,
+                        points = points
+                    )
+                    clientsList.add(client)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return clientsList
+    }
+
+    fun updateClient(client: ClientModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(ID, client.id)
+        contentValues.put(NAME, client.name)
+        contentValues.put(USER, client.user)
+        contentValues.put(PASSWORD, client.password)
+        contentValues.put(EMAIL, client.email)
+        contentValues.put(POINTS, client.points)
+
+        return updateInDatabase(TBL_CLIENT, contentValues, ID + "=" + client.id)
+    }
+
+    fun deleteClient(id: Int): Int {
+        return deleteFromDatabase(TBL_CLIENT, "id=$id")
+    }
+
+    // End of Client Table methods
+    // #############################################################################################
+    // Start of ClientPhone Table methods
+
+    private fun createClientPhoneTable(db: SQLiteDatabase?) {
+        val clientPhoneTable = ("CREATE TABLE " + TBL_CLIENT_PHONE + " (" +
+                ID + " TEXT," +
+                PHONE + " TEXT," +
+                " PRIMARY KEY (" + ID + "," + PHONE + ")," +
+                " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_CLIENT + "(" + ID + "))")
+
+        db?.execSQL(clientPhoneTable)
+    }
+
+    fun insertClientPhone(clientPhone: ClientPhoneModel): Long {
+        val contentValues = ContentValues()
+        contentValues.put(ID, clientPhone.id)
+        contentValues.put(PHONE, clientPhone.phone)
+
+        return insertOnDatabase(contentValues, TBL_CLIENT_PHONE)
+    }
+
+    fun getAllClientPhones(): ArrayList<ClientPhoneModel> {
+        val clientPhonesList: ArrayList<ClientPhoneModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_CLIENT_PHONE)
+
+        var id: String
+        var phone: String
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    id = cursor.getString(cursor.getColumnIndex(ID))
+                    phone = cursor.getString(cursor.getColumnIndex(PHONE))
+
+                    val clientPhone = ClientPhoneModel(id = id, phone = phone)
+                    clientPhonesList.add(clientPhone)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return clientPhonesList
+    }
+
+    fun updateClientPhone(clientPhone: ClientPhoneModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(ID, clientPhone.id)
+        contentValues.put(PHONE, clientPhone.phone)
+
+        return updateInDatabase(TBL_CLIENT_PHONE, contentValues, ID + "=" + clientPhone.id)
+    }
+
+    fun deleteClientPhone(id: String): Int {
+        return deleteFromDatabase(TBL_CLIENT_PHONE, "id=$id")
+    }
+
+    // End of ClientPhone Table methods
+    // #############################################################################################
+    // Start of ClientAddress Table methods
+
+    private fun createClientAddressTable(db: SQLiteDatabase?) {
+        val clientAddressTable = ("CREATE TABLE " + TBL_CLIENT_ADDRESS + " (" +
+                ID + " TEXT," +
+                ADDRESS + " TEXT," +
+                " PRIMARY KEY (" + ID + "," + ADDRESS + ")," +
+                " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_CLIENT + "(" + ID + "))")
+
+        db?.execSQL(clientAddressTable)
+    }
+
+    fun insertClientAddress(clientAddress: ClientAddressModel): Long {
+        val contentValues = ContentValues()
+        contentValues.put(ID, clientAddress.id)
+        contentValues.put(ADDRESS, clientAddress.address)
+
+        return insertOnDatabase(contentValues, TBL_CLIENT_ADDRESS)
+    }
+
+    fun getAllClientAddresses(): ArrayList<ClientAddressModel> {
+        val clientAddressesList: ArrayList<ClientAddressModel> = ArrayList()
+        val cursor = getFromDatabase(TBL_CLIENT_ADDRESS)
+
+        var id: String
+        var address: String
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    id = cursor.getString(cursor.getColumnIndex(ID))
+                    address = cursor.getString(cursor.getColumnIndex(ADDRESS))
+
+                    val clientAddress = ClientAddressModel(id = id, address = address)
+                    clientAddressesList.add(clientAddress)
+                } while (cursor.moveToNext())
+            }
+        }
+
+        return clientAddressesList
+    }
+
+    fun updateClientAddress(clientAddress: ClientAddressModel): Int {
+        val contentValues = ContentValues()
+
+        contentValues.put(ID, clientAddress.id)
+        contentValues.put(ADDRESS, clientAddress.address)
+
+        return updateInDatabase(TBL_CLIENT_ADDRESS, contentValues, ID + "=" + clientAddress.id)
+    }
+
+    fun deleteClientAddress(id: String): Int {
+        return deleteFromDatabase(TBL_CLIENT_ADDRESS, "id=$id")
+    }
+
+    // End of ClientAddress Table methods
+    // #############################################################################################
     // Start of Provider Table methods
 
     private fun createProviderTable(db: SQLiteDatabase?) {
@@ -483,84 +675,6 @@ class SQLiteHelper (context: Context) :
 
     // End of Wash Table methods
     // #############################################################################################
-    // Start of Client Table methods
-
-    private fun createClientTable(db: SQLiteDatabase?) {
-        val clientTable = ("CREATE TABLE " + TBL_CLIENT + " (" +
-                ID + " TEXT PRIMARY KEY," +
-                NAME + " TEXT," +
-                USER + " TEXT," +
-                PASSWORD + " TEXT," +
-                EMAIL + " TEXT," +
-                POINTS + " INTEGER" + ")")
-
-        db?.execSQL(clientTable)
-    }
-
-    fun insertClient(client: ClientModel): Long {
-        val contentValues = ContentValues()
-        contentValues.put(ID, client.id)
-        contentValues.put(NAME, client.name)
-        contentValues.put(USER, client.user)
-        contentValues.put(PASSWORD, client.password)
-        contentValues.put(EMAIL, client.email)
-        contentValues.put(POINTS, client.points)
-
-        return insertOnDatabase(contentValues, TBL_CLIENT)
-    }
-
-    fun getAllClients(): ArrayList<ClientModel> {
-        val clientsList: ArrayList<ClientModel> = ArrayList()
-        val cursor = getFromDatabase(TBL_CLIENT)
-
-        var id: String
-        var name: String
-        var user: String
-        var password: String
-        var email: String
-        var points: Int
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                do {
-                    id = cursor.getString(cursor.getColumnIndex(ID))
-                    name = cursor.getString(cursor.getColumnIndex(NAME))
-                    user = cursor.getString(cursor.getColumnIndex(USER))
-                    password = cursor.getString(cursor.getColumnIndex(PASSWORD))
-                    email = cursor.getString(cursor.getColumnIndex(EMAIL))
-                    points = cursor.getInt(cursor.getColumnIndex(POINTS))
-
-                    val client = ClientModel(
-                        id = id, name = name, user = user, password = password, email = email,
-                        points = points
-                    )
-                    clientsList.add(client)
-                } while (cursor.moveToNext())
-            }
-        }
-
-        return clientsList
-    }
-
-    fun updateClient(client: ClientModel): Int {
-        val contentValues = ContentValues()
-
-        contentValues.put(ID, client.id)
-        contentValues.put(NAME, client.name)
-        contentValues.put(USER, client.user)
-        contentValues.put(PASSWORD, client.password)
-        contentValues.put(EMAIL, client.email)
-        contentValues.put(POINTS, client.points)
-
-        return updateInDatabase(TBL_CLIENT, contentValues, ID + "=" + client.id)
-    }
-
-    fun deleteClient(id: Int): Int {
-        return deleteFromDatabase(TBL_CLIENT, "id=$id")
-    }
-
-    // End of Client Table methods
-    // #############################################################################################
     // Start of Appointment Table methods
 
     private fun createAppointmentTable(db: SQLiteDatabase?) {
@@ -825,120 +939,6 @@ class SQLiteHelper (context: Context) :
     }
 
     // End of InputProductWash Table methods
-    // #############################################################################################
-    // Start of ClientPhone Table methods
-
-    private fun createClientPhoneTable(db: SQLiteDatabase?) {
-        val clientPhoneTable = ("CREATE TABLE " + TBL_CLIENT_PHONE + " (" +
-                ID + " TEXT," +
-                PHONE + " TEXT," +
-                " PRIMARY KEY (" + ID + "," + PHONE + ")," +
-                " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_CLIENT + "(" + ID + "))")
-
-        db?.execSQL(clientPhoneTable)
-    }
-
-    fun insertClientPhone(clientPhone: ClientPhoneModel): Long {
-        val contentValues = ContentValues()
-        contentValues.put(ID, clientPhone.id)
-        contentValues.put(PHONE, clientPhone.phone)
-
-        return insertOnDatabase(contentValues, TBL_CLIENT_PHONE)
-    }
-
-    fun getAllClientPhones(): ArrayList<ClientPhoneModel> {
-        val clientPhonesList: ArrayList<ClientPhoneModel> = ArrayList()
-        val cursor = getFromDatabase(TBL_CLIENT_PHONE)
-
-        var id: String
-        var phone: String
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                do {
-                    id = cursor.getString(cursor.getColumnIndex(ID))
-                    phone = cursor.getString(cursor.getColumnIndex(PHONE))
-
-                    val clientPhone = ClientPhoneModel(id = id, phone = phone)
-                    clientPhonesList.add(clientPhone)
-                } while (cursor.moveToNext())
-            }
-        }
-
-        return clientPhonesList
-    }
-
-    fun updateClientPhone(clientPhone: ClientPhoneModel): Int {
-        val contentValues = ContentValues()
-
-        contentValues.put(ID, clientPhone.id)
-        contentValues.put(PHONE, clientPhone.phone)
-
-        return updateInDatabase(TBL_CLIENT_PHONE, contentValues, ID + "=" + clientPhone.id)
-    }
-
-    fun deleteClientPhone(id: String, phone: String): Int {
-        return deleteFromDatabase(TBL_CLIENT_PHONE, "id=$id AND phone=$phone")
-    }
-
-    // End of ClientPhone Table methods
-    // #############################################################################################
-    // Start of ClientAddress Table methods
-
-    private fun createClientAddressTable(db: SQLiteDatabase?) {
-        val clientAddressTable = ("CREATE TABLE " + TBL_CLIENT_ADDRESS + " (" +
-                ID + " TEXT," +
-                ADDRESS + " TEXT," +
-                " PRIMARY KEY (" + ID + "," + ADDRESS + ")," +
-                " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_CLIENT + "(" + ID + "))")
-
-        db?.execSQL(clientAddressTable)
-    }
-
-    fun insertClientAddress(clientAddress: ClientAddressModel): Long {
-        val contentValues = ContentValues()
-        contentValues.put(ID, clientAddress.id)
-        contentValues.put(ADDRESS, clientAddress.address)
-
-        return insertOnDatabase(contentValues, TBL_CLIENT_ADDRESS)
-    }
-
-    fun getAllClientAddresses(): ArrayList<ClientAddressModel> {
-        val clientAddressesList: ArrayList<ClientAddressModel> = ArrayList()
-        val cursor = getFromDatabase(TBL_CLIENT_ADDRESS)
-
-        var id: String
-        var address: String
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                do {
-                    id = cursor.getString(cursor.getColumnIndex(ID))
-                    address = cursor.getString(cursor.getColumnIndex(ADDRESS))
-
-                    val clientAddress = ClientAddressModel(id = id, address = address)
-                    clientAddressesList.add(clientAddress)
-                } while (cursor.moveToNext())
-            }
-        }
-
-        return clientAddressesList
-    }
-
-    fun updateClientAddress(clientAddress: ClientAddressModel): Int {
-        val contentValues = ContentValues()
-
-        contentValues.put(ID, clientAddress.id)
-        contentValues.put(ADDRESS, clientAddress.address)
-
-        return updateInDatabase(TBL_CLIENT_ADDRESS, contentValues, ID + "=" + clientAddress.id)
-    }
-
-    fun deleteClientAddress(id: String, address: String): Int {
-        return deleteFromDatabase(TBL_CLIENT_ADDRESS, "id=$id AND address=$address")
-    }
-
-    // End of ClientAddress Table methods
     // #############################################################################################
     // Start of AppointmentWorker Table methods
 

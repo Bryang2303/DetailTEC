@@ -292,89 +292,104 @@ class RootClientmanagementActivity : AppCompatActivity() {
     }
 
     private fun updateClientAddresses(database: SQLiteHelper, id: String, locations:ArrayList<String>) {
-        val locationList = database.getAllClientAddresses()
-        var firstCounter = 0
-        var notExisting = true
-        for (i in locationList) {
-            var secondCounter = 0
-            while (secondCounter < locations.size && notExisting) {
-                if (id == locationList.get(firstCounter).id && locationList.get(firstCounter).address == locations.get(secondCounter)) {
-                    notExisting = false
-                }
-
-                secondCounter++
-            }
-
-            if (id == locationList.get(firstCounter).id && notExisting) {
-                database.deleteClientAddress(id, locationList.get(firstCounter).address)
-            }
-            notExisting = true
-            firstCounter++
-        }
-
-        firstCounter = 0
-        notExisting = true
+        database.deleteClientAddress(id)
+        var counter = 0
         for (i in locations) {
-            var secondCounter = 0
-            while (secondCounter < locationList.size && notExisting) {
-                if (id == locationList.get(secondCounter).id && locations.get(firstCounter) == locationList.get(secondCounter).address) {
-                    notExisting = false
-                }
-
-                secondCounter++
-            }
-
-            if (notExisting) {
-                val clientAddress = ClientAddressModel(id = id, address = locations.get(firstCounter))
-                database.insertClientAddress(clientAddress)
-            }
-
-            notExisting = true
-            firstCounter++
+            val clientAddress = ClientAddressModel(id = id, address = locations.get(counter))
+            database.insertClientAddress(clientAddress)
+            counter++
         }
+//        val locationList = database.getAllClientAddresses()
+//        var firstCounter = 0
+//        var notExisting = true
+//        for (i in locationList) {
+//            var secondCounter = 0
+//            while (secondCounter < locations.size && notExisting) {
+//                if (id == locationList.get(firstCounter).id && locationList.get(firstCounter).address == locations.get(secondCounter)) {
+//                    notExisting = false
+//                }
+//
+//                secondCounter++
+//            }
+//
+//            if (id == locationList.get(firstCounter).id && notExisting) {
+//                database.deleteClientAddress(id)
+//            }
+//            notExisting = true
+//            firstCounter++
+//        }
+//
+//        firstCounter = 0
+//        notExisting = true
+//        for (i in locations) {
+//            var secondCounter = 0
+//            while (secondCounter < locationList.size && notExisting) {
+//                if (id == locationList.get(secondCounter).id && locations.get(firstCounter) == locationList.get(secondCounter).address) {
+//                    notExisting = false
+//                }
+//
+//                secondCounter++
+//            }
+//
+//            if (notExisting) {
+//                val clientAddress = ClientAddressModel(id = id, address = locations.get(firstCounter))
+//                database.insertClientAddress(clientAddress)
+//            }
+//
+//            notExisting = true
+//            firstCounter++
+//        }
     }
 
     private fun updateClientPhones(database: SQLiteHelper, id: String, phones: ArrayList<String>) {
-        // Revisar números existentes
-        val phonesList = database.getAllClientPhones()
-        var firstCounter = 0
-        var notExisting = true
-        for (i in phonesList) {
-            var secondCounter = 0
-            while (secondCounter < phones.size && notExisting) {
-                if (id == phonesList.get(firstCounter).id && phonesList.get(firstCounter).phone == phones.get(secondCounter)) {
-                    notExisting = false
-                }
-                secondCounter++
-            }
-
-            if (id == phonesList.get(firstCounter).id && notExisting) {
-                database.deleteClientPhone(id, phonesList.get(firstCounter).phone)
-            }
-            notExisting = true
-            firstCounter++
-        }
-
-        firstCounter = 0
-        notExisting = true
+        database.deleteClientPhone(id)
+        var counter = 0
         for (i in phones) {
-            var secondCounter = 0
-            while (secondCounter < phonesList.size && notExisting) {
-                if (id == phonesList.get(secondCounter).id && phones.get(firstCounter) == phonesList.get(secondCounter).phone) {
-                    notExisting = false
-                }
-
-                secondCounter++
-            }
-
-            if (notExisting) {
-                val clientPhone = ClientPhoneModel(id =  id, phone = phones.get(firstCounter))
-                database.insertClientPhone(clientPhone)
-            }
-            notExisting = true
-            firstCounter++
+            val clientPhone = ClientPhoneModel(id = id, phone = phones.get(counter))
+            database.insertClientPhone(clientPhone)
+            counter++
         }
     }
+        // Revisar números existentes
+//        val phonesList = database.getAllClientPhones()
+//        var firstCounter = 0
+//        var notExisting = true
+//        for (i in phonesList) {
+//            var secondCounter = 0
+//            while (secondCounter < phones.size && notExisting) {
+//                if (id == phonesList.get(firstCounter).id && phonesList.get(firstCounter).phone == phones.get(secondCounter)) {
+//                    notExisting = false
+//                }
+//                secondCounter++
+//            }
+//
+//            if (id == phonesList.get(firstCounter).id && notExisting) {
+//                database.deleteClientPhone(id)
+//            }
+//            notExisting = true
+//            firstCounter++
+//        }
+//
+//        firstCounter = 0
+//        notExisting = true
+//        for (i in phones) {
+//            var secondCounter = 0
+//            while (secondCounter < phonesList.size && notExisting) {
+//                if (id == phonesList.get(secondCounter).id && phones.get(firstCounter) == phonesList.get(secondCounter).phone) {
+//                    notExisting = false
+//                }
+//
+//                secondCounter++
+//            }
+//
+//            if (notExisting) {
+//                val clientPhone = ClientPhoneModel(id =  id, phone = phones.get(firstCounter))
+//                database.insertClientPhone(clientPhone)
+//            }
+//            notExisting = true
+//            firstCounter++
+//        }
+//    }
 
     fun showErrorMessage(){
         Toast.makeText(this,"Ha ocurrido un error en la actualización de datos", Toast.LENGTH_SHORT).show()

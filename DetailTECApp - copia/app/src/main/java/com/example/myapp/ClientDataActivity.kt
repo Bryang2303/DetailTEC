@@ -64,7 +64,7 @@ class ClientDataActivity : AppCompatActivity() {
 
         // Array de los datos del cliente
         var clientData2: ArrayList<TextView> = arrayListOf()
-        clientData2.addAll(listOf(fName,lName,lName2,id,email,locations,phones))
+        clientData2.addAll(listOf(fName,email,locations,phones))
 
         // Contador de ubicaciones del cliente, al ser multivaluado, el algoritmo permite la adicion o eliminacion de tantas direcciones como sea posible
         var locationsCount = 0
@@ -243,113 +243,143 @@ class ClientDataActivity : AppCompatActivity() {
 
         var updateClientDataB = findViewById<Button>(R.id.dataAcceptButtonClient)
         updateClientDataB.setOnClickListener {
-            val clientPos = Integer.parseInt(clientPosition.toString())
-            var id = clientsList.get(clientPos).id
-            var name = fName.text.toString()
-            var username = usernameDataClient.text.toString()
-            var password = clientsList.get(clientPos).password
-            var email = email.text.toString()
-            var points = clientsList.get(clientPos).points
+            var readyToUpdate = true
 
-            val client = ClientModel(id = id, name = name, user = username, password = password,
-                email = email, points = points)
-
-            updateClientAddresses(database, id, locationsArray)
-            updateClientPhones(database, id, phonesArray)
-
-            if (database.updateClient(client) < 0) {
-                showErrorMessage()
-            } else {
-                showUpdatedMessage()
+            for (dataInput in clientData2) {
+                if (dataInput.text == "" || dataInput.text.isEmpty()) {
+                    readyToUpdate = false
+                    // showErrorMessage
+                    break
+                }
             }
+
+            if (readyToUpdate) {
+                val clientPos = Integer.parseInt(clientPosition.toString())
+                var id = clientsList.get(clientPos).id
+                var name = fName.text.toString()
+                var username = usernameDataClient.text.toString()
+                var password = clientsList.get(clientPos).password
+                var email = email.text.toString()
+                var points = clientsList.get(clientPos).points
+
+                val client = ClientModel(id = id, name = name, user = username, password = password,
+                    email = email, points = points)
+
+                Log.d("RESPUESTA", locationsArray.size.toString())
+                Log.d("RESPUESTA", phonesArray.size.toString())
+
+                updateClientAddresses(database, id, locationsArray)
+                updateClientPhones(database, id, phonesArray)
+
+                if (database.updateClient(client) < 0) {
+                    showErrorMessage()
+                } else {
+                    showUpdatedMessage()
+                }
+            }
+
         }
     }
 
     private fun updateClientAddresses(database: SQLiteHelper, id: String, locations:ArrayList<String>) {
-        val locationList = database.getAllClientAddresses()
-        var firstCounter = 0
-        var notExisting = true
-        for (i in locationList) {
-            var secondCounter = 0
-            while (secondCounter < locations.size && notExisting) {
-                Log.d("RESPUESTA", locationList.get(firstCounter).address)
-                Log.d("RESPUESTA", locations.get(secondCounter))
-                if (id == locationList.get(firstCounter).id && locationList.get(firstCounter).address == locations.get(secondCounter)) {
-                    notExisting = false
-                }
-
-                secondCounter++
-            }
-
-            if (id == locationList.get(firstCounter).id && notExisting) {
-                database.deleteClientAddress(id, locationList.get(firstCounter).address)
-            }
-            notExisting = true
-            firstCounter++
-        }
-
-        firstCounter = 0
-        notExisting = true
+        database.deleteClientAddress(id)
+        var counter = 0
         for (i in locations) {
-            var secondCounter = 0
-            while (secondCounter < locationList.size && notExisting) {
-                if (id == locationList.get(secondCounter).id && locations.get(firstCounter) == locationList.get(secondCounter).address) {
-                    notExisting = false
-                }
-
-                secondCounter++
-            }
-
-            if (notExisting) {
-                val clientAddress = ClientAddressModel(id = id, address = locations.get(firstCounter))
-                database.insertClientAddress(clientAddress)
-            }
-
-            notExisting = true
-            firstCounter++
+            val clientAddress = ClientAddressModel(id = id, address = locations.get(counter))
+            database.insertClientAddress(clientAddress)
+            counter++
         }
+//        val locationList = database.getAllClientAddresses()
+//        var firstCounter = 0
+//        var notExisting = true
+//        for (i in locationList) {
+//            var secondCounter = 0
+//            while (secondCounter < locations.size && notExisting) {
+//                Log.d("RESPUESTA", locationList.get(firstCounter).address)
+//                Log.d("RESPUESTA", locations.get(secondCounter))
+//                if (id == locationList.get(firstCounter).id && locationList.get(firstCounter).address == locations.get(secondCounter)) {
+//                    notExisting = false
+//                }
+//
+//                secondCounter++
+//            }
+//
+//            if (id == locationList.get(firstCounter).id && notExisting) {
+//                database.deleteClientAddress(id, locationList.get(firstCounter).address)
+//            }
+//            notExisting = true
+//            firstCounter++
+//        }
+//
+//        firstCounter = 0
+//        notExisting = true
+//        for (i in locations) {
+//            var secondCounter = 0
+//            while (secondCounter < locationList.size && notExisting) {
+//                if (id == locationList.get(secondCounter).id && locations.get(firstCounter) == locationList.get(secondCounter).address) {
+//                    notExisting = false
+//                }
+//
+//                secondCounter++
+//            }
+//
+//            if (notExisting) {
+//                val clientAddress = ClientAddressModel(id = id, address = locations.get(firstCounter))
+//                database.insertClientAddress(clientAddress)
+//            }
+//
+//            notExisting = true
+//            firstCounter++
+//        }
     }
 
     private fun updateClientPhones(database: SQLiteHelper, id: String, phones: ArrayList<String>) {
-        // Revisar números existentes
-        val phonesList = database.getAllClientPhones()
-        var firstCounter = 0
-        var notExisting = true
-        for (i in phonesList) {
-            var secondCounter = 0
-            while (secondCounter < phones.size && notExisting) {
-                if (id == phonesList.get(firstCounter).id && phonesList.get(firstCounter).phone == phones.get(secondCounter)) {
-                    notExisting = false
-                }
-                secondCounter++
-            }
-
-            if (id == phonesList.get(firstCounter).id && notExisting) {
-                database.deleteClientPhone(id, phonesList.get(firstCounter).phone)
-            }
-            notExisting = true
-            firstCounter++
-        }
-
-        firstCounter = 0
-        notExisting = true
+        database.deleteClientPhone(id)
+        var counter = 0
         for (i in phones) {
-            var secondCounter = 0
-            while (secondCounter < phonesList.size && notExisting) {
-                if (id == phonesList.get(secondCounter).id && phones.get(firstCounter) == phonesList.get(secondCounter).phone) {
-                    notExisting = false
-                }
-
-                secondCounter++
-            }
-
-            if (notExisting) {
-                val clientPhone = ClientPhoneModel(id =  id, phone = phones.get(firstCounter))
-                database.insertClientPhone(clientPhone)
-            }
-            notExisting = true
-            firstCounter++
+            val clientPhone = ClientPhoneModel(id = id, phone = phones.get(counter))
+            database.insertClientPhone(clientPhone)
+            counter++
         }
+        // Revisar números existentes
+//        val phonesList = database.getAllClientPhones()
+//        var firstCounter = 0
+//        var notExisting = true
+//        for (i in phonesList) {
+//            var secondCounter = 0
+//            while (secondCounter < phones.size && notExisting) {
+//                if (id == phonesList.get(firstCounter).id && phonesList.get(firstCounter).phone == phones.get(secondCounter)) {
+//                    notExisting = false
+//                }
+//                secondCounter++
+//            }
+//
+//            if (id == phonesList.get(firstCounter).id && notExisting) {
+//                database.deleteClientPhone(id, phonesList.get(firstCounter).phone)
+//            }
+//            notExisting = true
+//            firstCounter++
+//        }
+//
+//        firstCounter = 0
+//        notExisting = true
+//        for (i in phones) {
+//            var secondCounter = 0
+//            while (secondCounter < phonesList.size && notExisting) {
+//                if (id == phonesList.get(secondCounter).id && phones.get(firstCounter) == phonesList.get(secondCounter).phone) {
+//                    notExisting = false
+//                }
+//
+//                secondCounter++
+//            }
+//
+//            if (notExisting) {
+//                val clientPhone = ClientPhoneModel(id =  id, phone = phones.get(firstCounter))
+//                database.insertClientPhone(clientPhone)
+//            }
+//            notExisting = true
+//            firstCounter++
+//        }
     }
 
     fun showErrorMessage(){
