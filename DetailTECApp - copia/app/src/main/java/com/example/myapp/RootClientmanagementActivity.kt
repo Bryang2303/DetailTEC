@@ -4,8 +4,11 @@ import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import com.example.myapp.models.ClientAddressModel
 import com.example.myapp.models.ClientModel
 import com.example.myapp.models.ClientPhoneModel
@@ -18,6 +21,8 @@ class RootClientmanagementActivity : AppCompatActivity() {
 
         // Se inicia la base de datos
         val database = SQLiteHelper(applicationContext)
+        var clientID = ""
+        var clientPosition = -1
 
         // Boton para volver al menu del Administrador
         var backClientDataRootB = findViewById<TextView>(R.id.backDataButtonRoot)
@@ -178,9 +183,13 @@ class RootClientmanagementActivity : AppCompatActivity() {
         // Boton para buscar a un cliente por su nombre de usuario
         var searchClientIB = findViewById<ImageButton>(R.id.searchClientImageButtonRoot)
         searchClientIB.setOnClickListener {
-            val clientPosition = setClientInfo(database, Integer.parseInt(id.text.toString()), clientData2)
+            locationsArray.removeAll(locationsArray)
+            phonesArray.removeAll(phonesArray)
+            clientPosition = setClientInfo(database, id.text.toString(), clientData2)
 
             if (clientPosition > -1) {
+                val clientList: ArrayList<ClientModel> = database.getAllClients()
+                clientID = clientList.get(clientPosition).id
                 locations.text = ""
                 phones.text = ""
                 val locationsList: ArrayList<ClientAddressModel> = database.getAllClientAddresses()
@@ -224,15 +233,49 @@ class RootClientmanagementActivity : AppCompatActivity() {
                 }
             }
         }
+
+        var updateClientDataB = findViewById<Button>(R.id.dataAcceptButtonRoot)
+        updateClientDataB.setOnClickListener {
+            var readyToSave = true
+
+            for (dataInput in clientData2) {
+                if (dataInput.text == "" && dataInput.text.isEmpty()) {
+                    readyToSave = false
+                    showErrorMessage()
+                    break
+                }
+            }
+
+            if (readyToSave) {
+                val clientList: ArrayList<ClientModel> = database.getAllClients()
+                var newName = fName.text.toString()
+                var user = username.text.toString()
+                var password = clientList.get(clientPosition).password
+                var email = email.text.toString()
+                var points = clientList.get(clientPosition).points
+
+                val client = ClientModel(id = clientID, name = newName, user = user, password = password,
+                    email = email, points = points)
+
+                updateClientAddresses(database, clientID, locationsArray)
+                updateClientPhones(database, clientID, phonesArray)
+
+                if (database.updateClient(client) < 0) {
+                    showErrorMessage()
+                } else {
+                    showUpdatedMessage()
+                }
+            }
+        }
     }
 
-    private fun setClientInfo(database: SQLiteHelper, id: Int, clientData: ArrayList<TextView>): Int {
+    private fun setClientInfo(database: SQLiteHelper, id: String, clientData: ArrayList<TextView>): Int {
         val clientsList: ArrayList<ClientModel> = database.getAllClients()
         var clientPosition = -1
 
         var counter = 0
         for (i in clientsList) {
-            if (clientsList.get(counter).id.toString() == id.toString()) {
+            if (clientsList.get(counter).id == id) {
                 clientPosition = counter
             }
 
@@ -246,5 +289,98 @@ class RootClientmanagementActivity : AppCompatActivity() {
         }
 
         return clientPosition
+    }
+
+    private fun updateClientAddresses(database: SQLiteHelper, id: String, locations:ArrayList<String>) {
+        val locationList = database.getAllClientAddresses()
+        var firstCounter = 0
+        var notExisting = true
+        for (i in locationList) {
+            var secondCounter = 0
+            while (secondCounter < locations.size && notExisting) {
+                if (id == locationList.get(firstCounter).id && locationList.get(firstCounter).address == locations.get(secondCounter)) {
+                    notExisting = false
+                }
+
+                secondCounter++
+            }
+
+            if (id == locationList.get(firstCounter).id && notExisting) {
+                database.deleteClientAddress(id, locationList.get(firstCounter).address)
+            }
+            notExisting = true
+            firstCounter++
+        }
+
+        firstCounter = 0
+        notExisting = true
+        for (i in locations) {
+            var secondCounter = 0
+            while (secondCounter < locationList.size && notExisting) {
+                if (id == locationList.get(secondCounter).id && locations.get(firstCounter) == locationList.get(secondCounter).address) {
+                    notExisting = false
+                }
+
+                secondCounter++
+            }
+
+            if (notExisting) {
+                val clientAddress = ClientAddressModel(id = id, address = locations.get(firstCounter))
+                database.insertClientAddress(clientAddress)
+            }
+
+            notExisting = true
+            firstCounter++
+        }
+    }
+
+    private fun updateClientPhones(database: SQLiteHelper, id: String, phones: ArrayList<String>) {
+        // Revisar números existentes
+        val phonesList = database.getAllClientPhones()
+        var firstCounter = 0
+        var notExisting = true
+        for (i in phonesList) {
+            var secondCounter = 0
+            while (secondCounter < phones.size && notExisting) {
+                if (id == phonesList.get(firstCounter).id && phonesList.get(firstCounter).phone == phones.get(secondCounter)) {
+                    notExisting = false
+                }
+                secondCounter++
+            }
+
+            if (id == phonesList.get(firstCounter).id && notExisting) {
+                database.deleteClientPhone(id, phonesList.get(firstCounter).phone)
+            }
+            notExisting = true
+            firstCounter++
+        }
+
+        firstCounter = 0
+        notExisting = true
+        for (i in phones) {
+            var secondCounter = 0
+            while (secondCounter < phonesList.size && notExisting) {
+                if (id == phonesList.get(secondCounter).id && phones.get(firstCounter) == phonesList.get(secondCounter).phone) {
+                    notExisting = false
+                }
+
+                secondCounter++
+            }
+
+            if (notExisting) {
+                val clientPhone = ClientPhoneModel(id =  id, phone = phones.get(firstCounter))
+                database.insertClientPhone(clientPhone)
+            }
+            notExisting = true
+            firstCounter++
+        }
+    }
+
+    fun showErrorMessage(){
+        Toast.makeText(this,"Ha ocurrido un error en la actualización de datos", Toast.LENGTH_SHORT).show()
+    }
+
+    fun showUpdatedMessage(){
+        Toast.makeText(this,"Datos actualizados exitósamente", Toast.LENGTH_SHORT).show()
     }
 }

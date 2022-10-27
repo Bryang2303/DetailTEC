@@ -44,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
                     var counter = 0
                     var clientPosition = -1
                     for (i in usersList) {
-                        if (loginUsername.text.toString() == usersList.get(counter).id.toString()) {
+                        if (loginUsername.text.toString() == usersList.get(counter).id) {
                             clientPosition = counter
                         }
                         counter++

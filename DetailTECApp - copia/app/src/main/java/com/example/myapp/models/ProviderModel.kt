@@ -1,7 +1,7 @@
 package com.example.myapp.models
 
 class ProviderModel(
-    var legalIdentity: Int = 0,
+    var legalIdentity: String = "",
     var name: String = "",
     var email: String = "",
     var address: String = "",

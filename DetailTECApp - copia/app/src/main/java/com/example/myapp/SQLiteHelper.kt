@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import com.example.myapp.models.*
 import java.io.Serializable
 import java.lang.Exception
@@ -104,7 +105,7 @@ class SQLiteHelper (context: Context) :
 
     private fun createProviderTable(db: SQLiteDatabase?) {
         val providerTable = ("CREATE TABLE " + TBL_PROVIDER + " (" +
-                LEGAL_IDENTITY + " INTEGER PRIMARY KEY," +
+                LEGAL_IDENTITY + " TEXT PRIMARY KEY," +
                 NAME + " TEXT," +
                 EMAIL + " TEXT," +
                 ADDRESS + " TEXT," +
@@ -128,7 +129,7 @@ class SQLiteHelper (context: Context) :
         val providersList: ArrayList<ProviderModel> = ArrayList()
         val cursor = getFromDatabase(TBL_PROVIDER)
 
-        var legalIdentity: Int
+        var legalIdentity: String
         var name: String
         var email: String
         var address: String
@@ -137,7 +138,7 @@ class SQLiteHelper (context: Context) :
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    legalIdentity = cursor.getInt(cursor.getColumnIndex(LEGAL_IDENTITY))
+                    legalIdentity = cursor.getString(cursor.getColumnIndex(LEGAL_IDENTITY))
                     name = cursor.getString(cursor.getColumnIndex(NAME))
                     email = cursor.getString(cursor.getColumnIndex(EMAIL))
                     address = cursor.getString(cursor.getColumnIndex(ADDRESS))
@@ -178,6 +179,7 @@ class SQLiteHelper (context: Context) :
                 NAME + " TEXT," +
                 BRAND + " TEXT," +
                 PRICE + " INTEGER," +
+                AMOUNT + " INTEGER, " +
                 " PRIMARY KEY(" + NAME + "," + BRAND + "))")
 
         db?.execSQL(inputProductTable)
@@ -188,6 +190,7 @@ class SQLiteHelper (context: Context) :
         contentValues.put(NAME, product.name)
         contentValues.put(BRAND, product.brand)
         contentValues.put(PRICE, product.price)
+        contentValues.put(AMOUNT, product.amount)
 
         return insertOnDatabase(contentValues, TBL_INPUT_PRODUCT)
     }
@@ -199,6 +202,7 @@ class SQLiteHelper (context: Context) :
         var name: String
         var brand: String
         var price: Int
+        var amount: Int
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -206,8 +210,9 @@ class SQLiteHelper (context: Context) :
                     name = cursor.getString(cursor.getColumnIndex(NAME))
                     brand = cursor.getString(cursor.getColumnIndex(BRAND))
                     price = cursor.getInt(cursor.getColumnIndex(PRICE))
+                    amount = cursor.getInt(cursor.getColumnIndex(AMOUNT))
 
-                    val product = ProductModel(name = name, brand = brand, price = price)
+                    val product = ProductModel(name = name, brand = brand, price = price, amount = amount)
                     productsList.add(product)
                 } while (cursor.moveToNext())
             }
@@ -222,6 +227,7 @@ class SQLiteHelper (context: Context) :
         contentValues.put(NAME, product.name)
         contentValues.put(BRAND, product.brand)
         contentValues.put(PRICE, product.price)
+        contentValues.put(AMOUNT, product.amount)
 
         return updateInDatabase(TBL_INPUT_PRODUCT, contentValues, "name=" + product.name + " AND brand=" + product.brand)
     }
@@ -236,7 +242,7 @@ class SQLiteHelper (context: Context) :
 
     private fun createWorkerTable(db: SQLiteDatabase?) {
         val workerTable = ("CREATE TABLE " + TBL_WORKER + " (" +
-                ID + " INTEGER PRIMARY KEY," +
+                ID + " TEXT PRIMARY KEY," +
                 NAME + " TEXT," +
                 BIRTHDATE + " TEXT," + // DATE
                 AGE + " INTEGER," +
@@ -266,7 +272,7 @@ class SQLiteHelper (context: Context) :
         val workersList: ArrayList<WorkerModel> = ArrayList()
         val cursor = getFromDatabase(TBL_WORKER)
 
-        var id: Int
+        var id: String
         var name: String
         var birthDate: String
         var age: Int
@@ -278,7 +284,7 @@ class SQLiteHelper (context: Context) :
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    id = cursor.getInt(cursor.getColumnIndex(ID))
+                    id = cursor.getString(cursor.getColumnIndex(ID))
                     name = cursor.getString(cursor.getColumnIndex(NAME))
                     birthDate = cursor.getString(cursor.getColumnIndex(BIRTHDATE))
                     age = cursor.getInt(cursor.getColumnIndex(AGE))
@@ -481,7 +487,7 @@ class SQLiteHelper (context: Context) :
 
     private fun createClientTable(db: SQLiteDatabase?) {
         val clientTable = ("CREATE TABLE " + TBL_CLIENT + " (" +
-                ID + " INTEGER PRIMARY KEY," +
+                ID + " TEXT PRIMARY KEY," +
                 NAME + " TEXT," +
                 USER + " TEXT," +
                 PASSWORD + " TEXT," +
@@ -507,7 +513,7 @@ class SQLiteHelper (context: Context) :
         val clientsList: ArrayList<ClientModel> = ArrayList()
         val cursor = getFromDatabase(TBL_CLIENT)
 
-        var id: Int
+        var id: String
         var name: String
         var user: String
         var password: String
@@ -517,7 +523,7 @@ class SQLiteHelper (context: Context) :
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    id = cursor.getInt(cursor.getColumnIndex(ID))
+                    id = cursor.getString(cursor.getColumnIndex(ID))
                     name = cursor.getString(cursor.getColumnIndex(NAME))
                     user = cursor.getString(cursor.getColumnIndex(USER))
                     password = cursor.getString(cursor.getColumnIndex(PASSWORD))
@@ -573,7 +579,7 @@ class SQLiteHelper (context: Context) :
 
         db?.execSQL(appointmentTable)
 
-    }
+    } // Without changes
 
     fun insertAppointment(appointment: AppointmentModel): Long {
         val contentValues = ContentValues()
@@ -824,7 +830,7 @@ class SQLiteHelper (context: Context) :
 
     private fun createClientPhoneTable(db: SQLiteDatabase?) {
         val clientPhoneTable = ("CREATE TABLE " + TBL_CLIENT_PHONE + " (" +
-                ID + " INTEGER," +
+                ID + " TEXT," +
                 PHONE + " TEXT," +
                 " PRIMARY KEY (" + ID + "," + PHONE + ")," +
                 " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_CLIENT + "(" + ID + "))")
@@ -844,13 +850,13 @@ class SQLiteHelper (context: Context) :
         val clientPhonesList: ArrayList<ClientPhoneModel> = ArrayList()
         val cursor = getFromDatabase(TBL_CLIENT_PHONE)
 
-        var id: Int
+        var id: String
         var phone: String
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    id = cursor.getInt(cursor.getColumnIndex(ID))
+                    id = cursor.getString(cursor.getColumnIndex(ID))
                     phone = cursor.getString(cursor.getColumnIndex(PHONE))
 
                     val clientPhone = ClientPhoneModel(id = id, phone = phone)
@@ -871,7 +877,7 @@ class SQLiteHelper (context: Context) :
         return updateInDatabase(TBL_CLIENT_PHONE, contentValues, ID + "=" + clientPhone.id)
     }
 
-    fun deleteClientPhone(id: Int, phone: String): Int {
+    fun deleteClientPhone(id: String, phone: String): Int {
         return deleteFromDatabase(TBL_CLIENT_PHONE, "id=$id AND phone=$phone")
     }
 
@@ -881,7 +887,7 @@ class SQLiteHelper (context: Context) :
 
     private fun createClientAddressTable(db: SQLiteDatabase?) {
         val clientAddressTable = ("CREATE TABLE " + TBL_CLIENT_ADDRESS + " (" +
-                ID + " INTEGER," +
+                ID + " TEXT," +
                 ADDRESS + " TEXT," +
                 " PRIMARY KEY (" + ID + "," + ADDRESS + ")," +
                 " FOREIGN KEY (" + ID + ") REFERENCES " + TBL_CLIENT + "(" + ID + "))")
@@ -901,13 +907,13 @@ class SQLiteHelper (context: Context) :
         val clientAddressesList: ArrayList<ClientAddressModel> = ArrayList()
         val cursor = getFromDatabase(TBL_CLIENT_ADDRESS)
 
-        var id: Int
+        var id: String
         var address: String
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    id = cursor.getInt(cursor.getColumnIndex(ID))
+                    id = cursor.getString(cursor.getColumnIndex(ID))
                     address = cursor.getString(cursor.getColumnIndex(ADDRESS))
 
                     val clientAddress = ClientAddressModel(id = id, address = address)
@@ -928,7 +934,7 @@ class SQLiteHelper (context: Context) :
         return updateInDatabase(TBL_CLIENT_ADDRESS, contentValues, ID + "=" + clientAddress.id)
     }
 
-    fun deleteClientAddress(id: Int, address: String): Int {
+    fun deleteClientAddress(id: String, address: String): Int {
         return deleteFromDatabase(TBL_CLIENT_ADDRESS, "id=$id AND address=$address")
     }
 

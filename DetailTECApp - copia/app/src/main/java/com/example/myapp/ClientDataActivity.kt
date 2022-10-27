@@ -59,7 +59,7 @@ class ClientDataActivity : AppCompatActivity() {
 
         // Coloca la informacion en pantalla
         fName.text = clientsList.get(Integer.parseInt(clientPosition.toString())).name
-        id.text = clientsList.get(Integer.parseInt(clientPosition.toString())).id.toString()
+        id.text = clientsList.get(Integer.parseInt(clientPosition.toString())).id
         email.text = clientsList.get(Integer.parseInt(clientPosition.toString())).email
 
         // Array de los datos del cliente
@@ -204,7 +204,7 @@ class ClientDataActivity : AppCompatActivity() {
         var positionCounter = 0
         var itemsCounter = 0
         for (i in clientPhones) {
-            if (id.text.toString() == clientPhones.get(positionCounter).id.toString()) {
+            if (id.text.toString() == clientPhones.get(positionCounter).id) {
                 if (phones.text == "" || phones.text.isEmpty()) {
                     phones.text = (itemsCounter+1).toString() + ". " + clientPhones.get(positionCounter).phone
                     phonesArray.add(clientPhones.get(positionCounter).phone)
@@ -224,7 +224,7 @@ class ClientDataActivity : AppCompatActivity() {
         positionCounter = 0
         itemsCounter = 0
         for (i in clientAddresses) {
-            if (id.text.toString() == clientAddresses.get(positionCounter).id.toString()) {
+            if (id.text.toString() == clientAddresses.get(positionCounter).id) {
                 if (locations.text == "" || phones.text.isEmpty()) {
                     locations.text = (itemsCounter+1).toString() + ". " + clientAddresses.get(positionCounter).address
                     locationsArray.add(clientAddresses.get(positionCounter).address)
@@ -257,13 +257,6 @@ class ClientDataActivity : AppCompatActivity() {
             updateClientAddresses(database, id, locationsArray)
             updateClientPhones(database, id, phonesArray)
 
-//            positionCounter = 0
-//            for (i in locationsArray) {
-//                val clientAddress = ClientAddressModel(id = id, address = locationsArray.get(positionCounter))
-////                database.insertClientAddress(clientAddress)
-//                positionCounter++
-//            }
-
             if (database.updateClient(client) < 0) {
                 showErrorMessage()
             } else {
@@ -272,13 +265,15 @@ class ClientDataActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateClientAddresses(database: SQLiteHelper, id: Int, locations:ArrayList<String>) {
+    private fun updateClientAddresses(database: SQLiteHelper, id: String, locations:ArrayList<String>) {
         val locationList = database.getAllClientAddresses()
         var firstCounter = 0
         var notExisting = true
         for (i in locationList) {
             var secondCounter = 0
             while (secondCounter < locations.size && notExisting) {
+                Log.d("RESPUESTA", locationList.get(firstCounter).address)
+                Log.d("RESPUESTA", locations.get(secondCounter))
                 if (id == locationList.get(firstCounter).id && locationList.get(firstCounter).address == locations.get(secondCounter)) {
                     notExisting = false
                 }
@@ -286,7 +281,7 @@ class ClientDataActivity : AppCompatActivity() {
                 secondCounter++
             }
 
-            if (notExisting) {
+            if (id == locationList.get(firstCounter).id && notExisting) {
                 database.deleteClientAddress(id, locationList.get(firstCounter).address)
             }
             notExisting = true
@@ -315,7 +310,7 @@ class ClientDataActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateClientPhones(database: SQLiteHelper, id: Int, phones: ArrayList<String>) {
+    private fun updateClientPhones(database: SQLiteHelper, id: String, phones: ArrayList<String>) {
         // Revisar números existentes
         val phonesList = database.getAllClientPhones()
         var firstCounter = 0
@@ -329,7 +324,7 @@ class ClientDataActivity : AppCompatActivity() {
                 secondCounter++
             }
 
-            if (notExisting) {
+            if (id == phonesList.get(firstCounter).id && notExisting) {
                 database.deleteClientPhone(id, phonesList.get(firstCounter).phone)
             }
             notExisting = true
@@ -355,18 +350,6 @@ class ClientDataActivity : AppCompatActivity() {
             notExisting = true
             firstCounter++
         }
-    }
-
-    fun checkExistingPhone(database: SQLiteHelper, id: Int, phone: String): Boolean {
-        val clientPhoneList: ArrayList<ClientPhoneModel> = database.getAllClientPhones()
-        var counter = 0
-        for (i in clientPhoneList) {
-            if (clientPhoneList.get(counter).id == id && clientPhoneList.get(counter).phone == phone) {
-                return false
-            }
-            counter++
-        }
-        return true
     }
 
     fun showErrorMessage(){

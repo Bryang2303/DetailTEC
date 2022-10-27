@@ -197,7 +197,7 @@ class SinginActivity : AppCompatActivity() {
             // Almacenamiento en base de datos
             if (readyToSave) {
                 var name = clientData[0].text.toString()
-                var id = Integer.parseInt(clientData[1].text.toString())
+                var id = clientData[1].text.toString()
                 var email = clientData[2].text.toString()
                 var username = clientData[3].text.toString()
                 var password = clientData[4].text.toString()
@@ -225,7 +225,7 @@ class SinginActivity : AppCompatActivity() {
         locationsArray: ArrayList<String>,
         phonesArray: ArrayList<String>,
         database: SQLiteHelper,
-        id: Int
+        id: String
     ) {
         var counter = 0
         for (i in locationsArray) {

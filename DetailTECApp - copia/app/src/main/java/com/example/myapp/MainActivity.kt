@@ -15,9 +15,6 @@ class MainActivity : AppCompatActivity() {
 
         // Inicio de la base de datos
         val database = SQLiteHelper(applicationContext)
-//        database.deleteClientPhone(208140292, "66666666")
-//        database.deleteClientPhone(208140292, "62192009")
-//        database.deleteClientAddress(208140292)
 
         // Texto de bienvenida
         var HelloText = findViewById<TextView>(R.id.Hellotxt)
