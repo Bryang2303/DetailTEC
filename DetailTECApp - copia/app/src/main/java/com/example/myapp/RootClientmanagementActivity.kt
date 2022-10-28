@@ -72,6 +72,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
                 locationsCount++
             } else {
                 //locationsMap[locationsCount] = newLocation.text.toString()
+                locationsCount = locationsArray.size
                 locationsArray.add(newLocation.text.toString())
                 indexLocationsArray.add((locationsCount+1).toString())
 
@@ -139,6 +140,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
                 phonesCount++
             } else {
                 //locationsMap[locationsCount] = newLocation.text.toString()
+                phonesCount = phonesArray.size
                 phonesArray.add(newPhone.text.toString())
                 indexPhonesArray.add((phonesCount+1).toString())
 
@@ -157,32 +159,35 @@ class RootClientmanagementActivity : AppCompatActivity() {
                 // restriccion de int
             } else {
                 // Remover un telefono
-                for (x in 0..phonesCount-1){
-                    if (indexPhonesArray[x]==deletePhone.text.toString()){
-                        indexPhonesArray.removeAt(x)
-                        phonesArray.removeAt(x)
-                        phonesCount--
-                        break
+                var readyToDelete = false
+                var phonePosition = -1
+
+                try {
+                    phonePosition = Integer.parseInt(deletePhone.text.toString())
+                    readyToDelete = true
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                if (readyToDelete) {
+                    if ((phonePosition-1) < phonesArray.size) {
+                        phonesArray.removeAt(phonePosition-1)
+                        showRemovedMessage()
+                    } else {
+                        showErrorMessage()
+                    }
+                    var position = 0
+                    phones.text = ""
+                    for (x in phonesArray) {
+                        if (position == 0) {
+                            phones.text = (position+1).toString() + ". " + phonesArray.get(position)
+                        } else {
+                            phones.text = phones.text.toString() + "\r\n" + (position+1).toString() + ". " + phonesArray.get(position)
+                        }
+
+                        position++
                     }
                 }
-                for (z in 0..phonesCount-1){
-                    if (indexPhonesArray[z].toInt()>deletePhone.text.toString().toInt()){
-                        var newNum = indexPhonesArray[z].toInt()-1
-                        indexPhonesArray[z] = newNum.toString()
-                        println(phonesArray)
-                        println(indexPhonesArray)
-                    }
-                }
-                phones.text =""
-                deletePhone.text = ""
-
-
-                for (y in 0..phonesCount-1){
-                    phones.text = phones.text.toString()+"\r\n"+ indexPhonesArray[y] + ". " + phonesArray[y]
-                }
-                //println(phonesArray)
-                //println(indexPhonesArray)
-
             }
         }
 

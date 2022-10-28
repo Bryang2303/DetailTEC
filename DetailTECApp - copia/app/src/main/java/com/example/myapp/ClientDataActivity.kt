@@ -179,31 +179,35 @@ class ClientDataActivity : AppCompatActivity() {
                 // restriccion de int
             } else {
                 // Remover un telefono
-                for (x in 0..phonesCount-1){
-                    if (indexPhonesArray[x]==deletePhone.text.toString()){
-                        indexPhonesArray.removeAt(x)
-                        phonesArray.removeAt(x)
-                        phonesCount--
-                        break
-                    }
-                }
-                for (z in 0..phonesCount-1){
-                    if (indexPhonesArray[z].toInt()>deletePhone.text.toString().toInt()){
-                        var newNum = indexPhonesArray[z].toInt()-1
-                        indexPhonesArray[z] = newNum.toString()
-                        println(phonesArray)
-                        println(indexPhonesArray)
-                    }
-                }
-                phones.text =""
-                deletePhone.text = ""
+                var readyToDelete = false
+                var phonePosition = -1
 
-                for (y in 0..phonesCount-1){
-                    phones.text = phones.text.toString()+"\r\n"+ indexPhonesArray[y] + ". " + phonesArray[y]
+                try {
+                    phonePosition = Integer.parseInt(deletePhone.text.toString())
+                    readyToDelete = true
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-                //println(phonesArray)
-                //println(indexPhonesArray)
-                Log.d("PHONESARRAY", phonesArray.toString())
+
+                if (readyToDelete) {
+                    if ((phonePosition-1) < phonesArray.size) {
+                        phonesArray.removeAt(phonePosition-1)
+                        showRemovedMessage()
+                    } else {
+                        showErrorMessage()
+                    }
+                    var position = 0
+                    phones.text = ""
+                    for (x in phonesArray) {
+                        if (position == 0) {
+                            phones.text = (position+1).toString() + ". " + phonesArray.get(position)
+                        } else {
+                            phones.text = phones.text.toString() + "\r\n" + (position+1).toString() + ". " + phonesArray.get(position)
+                        }
+
+                        position++
+                    }
+                }
 
             }
 

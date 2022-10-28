@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import android.app.ActionBar
 import com.example.myapp.models.ClientAddressModel
+import com.example.myapp.models.ClientModel
 
 // Clase para la ventana inicial o Main
 class MainActivity : AppCompatActivity() {
@@ -17,9 +18,6 @@ class MainActivity : AppCompatActivity() {
 
         // Inicio de la base de datos
         val database = SQLiteHelper(applicationContext)
-//        database.deleteClientAddress("208140292")
-//        val clientAddress = ClientAddressModel(id = "208140292", address = "Zarcero")
-//        database.insertClientAddress(clientAddress)
 
         // Texto de bienvenida
         var HelloText = findViewById<TextView>(R.id.Hellotxt)
