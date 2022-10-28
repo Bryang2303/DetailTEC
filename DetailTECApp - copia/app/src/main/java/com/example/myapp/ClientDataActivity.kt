@@ -11,6 +11,7 @@ import android.widget.Toast
 import com.example.myapp.models.ClientAddressModel
 import com.example.myapp.models.ClientModel
 import com.example.myapp.models.ClientPhoneModel
+import java.lang.Exception
 
 // Clase de la ventana de los datos del Cliente
 class ClientDataActivity : AppCompatActivity() {
@@ -99,34 +100,41 @@ class ClientDataActivity : AppCompatActivity() {
         var deletelocationsSinginIB = findViewById<ImageButton>(R.id.deleteLocationImageButtonClient)
         deletelocationsSinginIB.setOnClickListener {
 
+            Log.d("LOCATIONS ARRAY", locationsArray.toString())
+
             if (locations.text == "" || locations.text.isEmpty()){
 
                 // restriccion de int
             } else {
                 // Remover una direccion
-                for (x in 0..locationsCount-1){
-                    if (indexLocationsArray[x]==deleteLocation.text.toString()){
-                        indexLocationsArray.removeAt(x)
-                        locationsArray.removeAt(x)
-                        locationsCount--
-                        break
-                    }
+                var readyToDelete = false
+                var locationPosition = -1
+
+                try {
+                    locationPosition = Integer.parseInt(deleteLocation.text.toString())
+                    readyToDelete = true
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-                for (z in 0..locationsCount-1){
-                    if (indexLocationsArray[z].toInt()>deleteLocation.text.toString().toInt()){
-                        var newNum = indexLocationsArray[z].toInt()-1
-                        indexLocationsArray[z] = newNum.toString()
-                        println(locationsArray)
-                        println(indexLocationsArray)
+
+                if (readyToDelete) {
+                    if ((locationPosition-1) < locationsArray.size) {
+                        locationsArray.removeAt(locationPosition-1)
+                        showRemovedMessage()
+                    } else {
+                        showErrorMessage()
                     }
-                }
-                locations.text =""
-                deleteLocation.text = ""
+                    var position = 0
+                    locations.text = ""
+                    for (x in locationsArray) {
+                        if (position == 0) {
+                            locations.text = (position+1).toString() + ". " + locationsArray.get(position)
+                        } else {
+                            locations.text = locations.text.toString() + "\r\n" + (position+1).toString() + ". " + locationsArray.get(position)
+                        }
 
-
-                for (y in 0..locationsCount-1){
-                    locations.text = locations.text.toString()+"\r\n"+ indexLocationsArray[y] + ". " + locationsArray[y]
-
+                        position++
+                    }
                 }
             }
         }
@@ -164,6 +172,8 @@ class ClientDataActivity : AppCompatActivity() {
         var deletephonesSinginIB = findViewById<ImageButton>(R.id.deletePhoneImageButtonClient)
         deletephonesSinginIB.setOnClickListener {
 
+            Log.d("PHONESARRAY", phonesArray.toString())
+
             if (phones.text == "" || phones.text.isEmpty()){
 
                 // restriccion de int
@@ -193,6 +203,7 @@ class ClientDataActivity : AppCompatActivity() {
                 }
                 //println(phonesArray)
                 //println(indexPhonesArray)
+                Log.d("PHONESARRAY", phonesArray.toString())
 
             }
 
@@ -380,6 +391,10 @@ class ClientDataActivity : AppCompatActivity() {
 //            notExisting = true
 //            firstCounter++
 //        }
+    }
+
+    fun showRemovedMessage() {
+        Toast.makeText(this, "Item eliminado", Toast.LENGTH_SHORT).show()
     }
 
     fun showErrorMessage(){
