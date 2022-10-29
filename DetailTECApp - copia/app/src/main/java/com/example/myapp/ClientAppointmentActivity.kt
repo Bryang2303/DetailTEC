@@ -176,7 +176,7 @@ class ClientAppointmentActivity : AppCompatActivity() {
                     AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View, position: Int, id: Long) {
-                    selectedBranch = branchs[position]
+                    selectedBranch = branchesNamesArray[position]
                         Toast.makeText(this@ClientAppointmentActivity,
                             getString(R.string.selected_item) + " " +
                                     "" + branchesNamesArray[position], Toast.LENGTH_SHORT).show()
