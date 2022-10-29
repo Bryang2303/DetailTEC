@@ -8,9 +8,12 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
+import com.example.myapp.models.AppointmentModel
+import com.example.myapp.models.ClientModel
 import com.itextpdf.text.Document
 import com.itextpdf.text.Paragraph
 import com.itextpdf.text.pdf.PdfWriter
@@ -34,6 +37,14 @@ class RootAppointmentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_root_appointment)
+
+        // Inicia base de datos
+        val database = SQLiteHelper(applicationContext)
+        val clientList = database.getAllClients()
+        var clientInfo = ClientModel(id = "", name = "", user = "", password = "", email = "", points = 0)
+        var selectedBranch = ""
+        var selectedService = ""
+
         // Boton para volver a la ventana del menu del Administrador
         var backAppointmentRootB = findViewById<TextView>(R.id.backAppointmentButtonRoot)
         backAppointmentRootB.setOnClickListener {
@@ -61,6 +72,7 @@ class RootAppointmentActivity : AppCompatActivity() {
                 AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View, position: Int, id: Long) {
+                    selectedBranch = branchs[position]
                     Toast.makeText(this@RootAppointmentActivity,
                         getString(R.string.selected_item) + " " +
                                 "" + branchs[position], Toast.LENGTH_SHORT).show()
@@ -88,6 +100,7 @@ class RootAppointmentActivity : AppCompatActivity() {
                 AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View, position: Int, id: Long) {
+                    selectedService = services[position]
                     Toast.makeText(this@RootAppointmentActivity,
                         getString(R.string.selected_item) + " " +
                                 "" + services[position], Toast.LENGTH_SHORT).show()
@@ -105,26 +118,64 @@ class RootAppointmentActivity : AppCompatActivity() {
         // Boton para finalzar la asignacion de Cita y generar la factura
         var finishAppointmentRootB = findViewById<TextView>(R.id.appointmentAcceptButtonRoot)
         finishAppointmentRootB.setOnClickListener {
+            var appointment: AppointmentModel
+            if (usernameAppointment.text == "" || usernameAppointment.text.isEmpty() ||
+                plateAppointment.text == "" || plateAppointment.text.isEmpty()) {
+                showErrorMessage()
+            } else {
+                var readyForAppointment = false
+                var counter = 0
+                for (i in clientList) {
+                    if (usernameAppointment.text.toString() == clientList.get(counter).id) {
+                        clientInfo = clientList.get(counter)
+                        readyForAppointment = true
+                    }
 
-            usernameText = usernameAppointment.text.toString()
-            plateText = plateAppointment.text.toString()
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
-                //system OS >= Marshmallow(6.0), verifica si se cuenta conlos permisos
-                if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_DENIED){
-                    // solicitar el permiso en caso de que no haya sido aceptado aun
-                    val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    requestPermissions(permissions, STORAGE_CODE)
+                    counter++
                 }
-                else{
 
-                    savePdf()
+                if (readyForAppointment) {
+                    var carId = plateAppointment.text.toString()
+                    var date = "--"
+                    var type = selectedService
+                    var name = clientInfo.name
+                    var id = clientInfo.id
+                    var branchName = selectedBranch
+
+                    appointment = AppointmentModel(carId = carId, date = date, type = type, name = name,
+                        id = id, branchName = branchName)
+
+                    Log.d("CAR ID", appointment.carId)
+                    Log.d("DATE", appointment.date)
+                    Log.d("TYPE", appointment.type)
+                    Log.d("NAME", appointment.name)
+                    Log.d("ID", appointment.id)
+                    Log.d("BRANCH NAME", appointment.branchName)
+                } else {
+                    showNoClientFoundMessage()
                 }
-            }
-            else{
 
-                savePdf()
             }
+
+//            usernameText = usernameAppointment.text.toString()
+//            plateText = plateAppointment.text.toString()
+//            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
+//                //system OS >= Marshmallow(6.0), verifica si se cuenta conlos permisos
+//                if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                    == PackageManager.PERMISSION_DENIED){
+//                    // solicitar el permiso en caso de que no haya sido aceptado aun
+//                    val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                    requestPermissions(permissions, STORAGE_CODE)
+//                }
+//                else{
+//
+//                    savePdf()
+//                }
+//            }
+//            else{
+//
+//                savePdf()
+//            }
         }
     }
     // Funcion que permite la generacion de una factura pdf para su posterior almacenado en el dospositivo
@@ -180,5 +231,13 @@ class RootAppointmentActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    fun showErrorMessage() {
+        Toast.makeText(this, "Datos incompletos", Toast.LENGTH_SHORT).show()
+    }
+
+    fun showNoClientFoundMessage() {
+        Toast.makeText(this, "Usuario inexistente", Toast.LENGTH_SHORT).show()
     }
 }

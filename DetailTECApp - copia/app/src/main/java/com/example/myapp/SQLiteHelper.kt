@@ -711,21 +711,21 @@ class SQLiteHelper (context: Context) :
         val appointmentsList: ArrayList<AppointmentModel> = ArrayList()
         val cursor = getFromDatabase(TBL_APPOINTMENT)
 
-        var carId: Int
+        var carId: String
         var date: String
         var type: String
         var name: String
-        var id: Int
+        var id: String
         var branchName: String
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    carId = cursor.getInt(cursor.getColumnIndex(CAR_ID))
+                    carId = cursor.getString(cursor.getColumnIndex(CAR_ID))
                     date = cursor.getString(cursor.getColumnIndex(DATE))
                     type = cursor.getString(cursor.getColumnIndex(TYPE))
                     name = cursor.getString(cursor.getColumnIndex(NAME))
-                    id = cursor.getInt(cursor.getColumnIndex(ID))
+                    id = cursor.getString(cursor.getColumnIndex(ID))
                     branchName = cursor.getString(cursor.getColumnIndex(BRANCH_NAME))
 
                     val appointment = AppointmentModel(carId = carId, date = date, type = type,

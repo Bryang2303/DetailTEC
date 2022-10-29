@@ -236,7 +236,7 @@
         android:layout_height="48dp"
         android:background="@drawable/custom_edittext"
         android:fontFamily="@font/poppinslight"
-        android:hint="Usuario del cliente"
+        android:hint="Cedula del cliente"
         android:inputType="text"
 
         android:textAlignment="center"
