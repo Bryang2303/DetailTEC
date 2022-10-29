@@ -121,6 +121,7 @@ class SinginActivity : AppCompatActivity() {
                 }
             }
         }
+
         // Contador de telefonos del cliente, al ser multivaluado, el algoritmo permite la adicion o eliminacion de tantos numeros telefonicos como sea posible
         var phonesCount = 0
 
@@ -149,6 +150,7 @@ class SinginActivity : AppCompatActivity() {
             newPhone.text = ""
 
         }
+
         // Boton para eliminar un telefono correspondiente
         var deletephonesSinginIB = findViewById<ImageButton>(R.id.deletePhoneImageButton)
         deletephonesSinginIB.setOnClickListener {
@@ -193,6 +195,7 @@ class SinginActivity : AppCompatActivity() {
             }
 
         }
+
         // Boton para proceder luego del registro
         var proceedSingInB = findViewById<TextView>(R.id.SinginAcceptButton)
         proceedSingInB.setOnClickListener {
@@ -205,12 +208,6 @@ class SinginActivity : AppCompatActivity() {
                     showErrorSingin()
                     break
                 }
-//                else {
-//                    val intent = Intent(this,LoginActivity::class.java)
-//                    startActivity(intent)
-//                    //dataInput.text = "FUNCIONA"
-//
-//                }
             }
 
             // Almacenamiento en base de datos
@@ -233,11 +230,7 @@ class SinginActivity : AppCompatActivity() {
                     existingMessage()
                 }
             }
-
-
         }
-
-
     }
 
     // Agregado de direcciones y telefonos en las tablas respectivas

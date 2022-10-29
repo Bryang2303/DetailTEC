@@ -23,13 +23,14 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
             //LoginActivity::class.java
         }
+
         // DATOS DEL INICIO DE SESION
         var loginUsername = findViewById<TextView>(R.id.usernameLoginEditText)
         var loginPassword = findViewById<TextView>(R.id.passwordLoginEditText)
+
         // Boton para acceder a su usuario
         var proceedLogInB = findViewById<TextView>(R.id.loginAcceptButton)
         proceedLogInB.setOnClickListener {
-
             if (loginPassword.text.isNotEmpty() && loginUsername.text.isNotEmpty()){
                 // Acceso al usuario administrador
                 if (loginPassword.text.toString()=="123" && loginUsername.text.toString()=="Root"){
@@ -68,17 +69,12 @@ class LoginActivity : AppCompatActivity() {
                         showErrorLogin()
                     }
                     // Acceso a cualquier usuario Cliente
-
-
-
                 }
-
             } else {
                 // Si los datos de inicio son invalidos
                 showErrorLogin()
             }
         }
-
     }
 
     // Funcion que muestra un mensaje de error en caso de haber realizado un inicio de sesion incorrectamente

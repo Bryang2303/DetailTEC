@@ -142,28 +142,9 @@ class ClientAppointmentActivity : AppCompatActivity() {
                 appointment = AppointmentModel(carId = carId, date = date, type = type, name = name,
                     id = id, branchName = branchName)
             }
-
-//            usernameText = usernameAppointmentClient.text.toString()
-//            plateText = plateAppointmentClient.text.toString()
-//            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
-//                //system OS >= Marshmallow(6.0), verifica si se cuenta conlos permisos
-//                if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                    == PackageManager.PERMISSION_DENIED){
-//                    // solicitar el permiso en caso de que no haya sido aceptado aun
-//                    val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                    requestPermissions(permissions, STORAGE_CODE)
-//                }
-//                else{
-//
-//                    savePdf()
-//                }
-//            }
-//            else{
-//
-//                savePdf()
-//            }
         }
     }
+
     // Funcion que permite la generacion de una factura pdf para su posterior almacenado en el dospositivo
     private fun savePdf() {
 

@@ -37,16 +37,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             //LoginActivity::class.java
         }
-
-        //HelloText.text = "BYE WORLD"
-
-        //variablesConstantes()
-        //funciones("ABC",1)
-        //clases()
-    }
-    // Funcion para mostrar un error en donde el nombre de usuario se encuentra vacio
-    fun showErrorName(){
-        Toast.makeText(this,"El nombre de usuario no puede ser vacio",Toast.LENGTH_SHORT).show()
     }
 
 

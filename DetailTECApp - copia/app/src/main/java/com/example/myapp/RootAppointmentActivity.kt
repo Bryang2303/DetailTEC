@@ -80,7 +80,6 @@ class RootAppointmentActivity : AppCompatActivity() {
                                 "" + branchs[position], Toast.LENGTH_SHORT).show()
                     // escribir el texto de la sucursal seleccionada para la posterior factura
                     branchText = branchs[position]
-
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
@@ -88,6 +87,7 @@ class RootAppointmentActivity : AppCompatActivity() {
                 }
             }
         }
+
         // Array de servicios disponibles
         val services = resources.getStringArray(R.array.services)
 
@@ -109,7 +109,6 @@ class RootAppointmentActivity : AppCompatActivity() {
                     // escribir el texto del servicio seleccionado para la posterior factura
                     serviceText = services[position]
                 }
-
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
                     // write code to perform some action
@@ -153,30 +152,10 @@ class RootAppointmentActivity : AppCompatActivity() {
                 } else {
                     showNoClientFoundMessage()
                 }
-
             }
-
-//            usernameText = usernameAppointment.text.toString()
-//            plateText = plateAppointment.text.toString()
-//            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
-//                //system OS >= Marshmallow(6.0), verifica si se cuenta conlos permisos
-//                if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                    == PackageManager.PERMISSION_DENIED){
-//                    // solicitar el permiso en caso de que no haya sido aceptado aun
-//                    val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                    requestPermissions(permissions, STORAGE_CODE)
-//                }
-//                else{
-//
-//                    savePdf()
-//                }
-//            }
-//            else{
-//
-//                savePdf()
-//            }
         }
     }
+
     // Funcion que permite la generacion de una factura pdf para su posterior almacenado en el dospositivo
     private fun savePdf() {
 

@@ -323,46 +323,6 @@ class RootClientmanagementActivity : AppCompatActivity() {
             database.insertClientAddress(clientAddress)
             counter++
         }
-//        val locationList = database.getAllClientAddresses()
-//        var firstCounter = 0
-//        var notExisting = true
-//        for (i in locationList) {
-//            var secondCounter = 0
-//            while (secondCounter < locations.size && notExisting) {
-//                if (id == locationList.get(firstCounter).id && locationList.get(firstCounter).address == locations.get(secondCounter)) {
-//                    notExisting = false
-//                }
-//
-//                secondCounter++
-//            }
-//
-//            if (id == locationList.get(firstCounter).id && notExisting) {
-//                database.deleteClientAddress(id)
-//            }
-//            notExisting = true
-//            firstCounter++
-//        }
-//
-//        firstCounter = 0
-//        notExisting = true
-//        for (i in locations) {
-//            var secondCounter = 0
-//            while (secondCounter < locationList.size && notExisting) {
-//                if (id == locationList.get(secondCounter).id && locations.get(firstCounter) == locationList.get(secondCounter).address) {
-//                    notExisting = false
-//                }
-//
-//                secondCounter++
-//            }
-//
-//            if (notExisting) {
-//                val clientAddress = ClientAddressModel(id = id, address = locations.get(firstCounter))
-//                database.insertClientAddress(clientAddress)
-//            }
-//
-//            notExisting = true
-//            firstCounter++
-//        }
     }
 
     // Actualizacion de telefonos
@@ -375,46 +335,6 @@ class RootClientmanagementActivity : AppCompatActivity() {
             counter++
         }
     }
-        // Revisar números existentes
-//        val phonesList = database.getAllClientPhones()
-//        var firstCounter = 0
-//        var notExisting = true
-//        for (i in phonesList) {
-//            var secondCounter = 0
-//            while (secondCounter < phones.size && notExisting) {
-//                if (id == phonesList.get(firstCounter).id && phonesList.get(firstCounter).phone == phones.get(secondCounter)) {
-//                    notExisting = false
-//                }
-//                secondCounter++
-//            }
-//
-//            if (id == phonesList.get(firstCounter).id && notExisting) {
-//                database.deleteClientPhone(id)
-//            }
-//            notExisting = true
-//            firstCounter++
-//        }
-//
-//        firstCounter = 0
-//        notExisting = true
-//        for (i in phones) {
-//            var secondCounter = 0
-//            while (secondCounter < phonesList.size && notExisting) {
-//                if (id == phonesList.get(secondCounter).id && phones.get(firstCounter) == phonesList.get(secondCounter).phone) {
-//                    notExisting = false
-//                }
-//
-//                secondCounter++
-//            }
-//
-//            if (notExisting) {
-//                val clientPhone = ClientPhoneModel(id =  id, phone = phones.get(firstCounter))
-//                database.insertClientPhone(clientPhone)
-//            }
-//            notExisting = true
-//            firstCounter++
-//        }
-//    }
 
     fun showRemovedMessage() {
         Toast.makeText(this, "Item eliminado", Toast.LENGTH_SHORT).show()
