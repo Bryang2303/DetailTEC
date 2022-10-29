@@ -276,6 +276,8 @@ class RootAppointmentActivity : AppCompatActivity() {
                     appointment = AppointmentModel(carId = carId, date = date, type = type, name = name,
                         id = id, branchName = branchName)
 
+                    showSuccessfulMessage()
+
                 } else {
                     showNoClientFoundMessage()
                 }
@@ -366,5 +368,9 @@ class RootAppointmentActivity : AppCompatActivity() {
 
     fun showNoClientFoundMessage() {
         Toast.makeText(this, "Usuario inexistente", Toast.LENGTH_SHORT).show()
+    }
+
+    fun showSuccessfulMessage() {
+        Toast.makeText(this, "Cita agendada correctamente", Toast.LENGTH_SHORT).show()
     }
 }
