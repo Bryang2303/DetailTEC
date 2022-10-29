@@ -176,13 +176,16 @@ class MainActivity : AppCompatActivity() {
 
             var counter = 0
             for (i in clientList) {
-                val id = clientList.get(counter).id
-                val name = clientList.get(counter).name
-                val user = clientList.get(counter).user
-                val password = clientList.get(counter).password
-                val email = clientList.get(counter).email
-                val points = clientList.get(counter).points.toString()
-                insertClientServer(name, id, null, user, password, email, points)
+
+                var id = clientList.get(counter).id
+                var name = clientList.get(counter).name
+                var user = clientList.get(counter).user
+                var password = clientList.get(counter).password
+                var email = clientList.get(counter).email
+                var points = clientList.get(counter).points.toString()
+
+                insertClientServer(name, id, "1990-02-02", user, password, email, points)
+                counter++
             }
         }
 
@@ -193,7 +196,7 @@ class MainActivity : AppCompatActivity() {
 
             selectClientsServer()
             uploadClientsToServer()
-
+            selectClientsServer()
             //insertClientServer("Bryan Gomez","305310094","2001-03-23",
                 //"Bryang2303", "abcde", "bryang2303@gmail.com", "1000")
 
