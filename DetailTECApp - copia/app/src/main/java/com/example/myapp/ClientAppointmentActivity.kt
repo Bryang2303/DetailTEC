@@ -36,6 +36,7 @@ class ClientAppointmentActivity : AppCompatActivity() {
 
         var usernameAppointmentClient = findViewById<TextView>(R.id.usernameAppointmentTextViewClient)
 
+        // Inicia la base de datos y toma a todos los clientes registrados
         val database = SQLiteHelper(applicationContext)
         val clientList = database.getAllClients()
 
@@ -44,7 +45,10 @@ class ClientAppointmentActivity : AppCompatActivity() {
         val name = bundle?.get("INTENT_NAME")
         var clientPosition = bundle?.get("CLIENT_POSITION")
 
+        // Asigna la informacion del cliente actual a un objeto
         val clientInfo = clientList.get(Integer.parseInt(clientPosition.toString()))
+
+        // Inicializacion de variables
         var selectedBranch = ""
         var selectedService = ""
 
@@ -121,11 +125,13 @@ class ClientAppointmentActivity : AppCompatActivity() {
         // Boton para finalzar la solicitud de Cita y generar la factura
         var finishAppointmentClientB = findViewById<TextView>(R.id.appointmentAcceptButtonClient)
         finishAppointmentClientB.setOnClickListener {
+            // Objeto con la informacion de la cita una vez se finalice el proceso
             var appointment: AppointmentModel
 
-            if (plateAppointmentClient.text == "" || plateAppointmentClient.text.isEmpty()) {
+            if (plateAppointmentClient.text == "" || plateAppointmentClient.text.isEmpty()) { // Datos incompletos
                 showPlateMessage()
             } else {
+                // Asignacion de toda la informacion de la cita en el objeto appointment
                 var carId = plateAppointmentClient.text.toString()
                 var date = "--"
                 var type = selectedService
@@ -213,6 +219,7 @@ class ClientAppointmentActivity : AppCompatActivity() {
         }
     }
 
+    // No se ingresa numero de placa
     fun showPlateMessage() {
         Toast.makeText(this, "Ingrese una placa de vehiculo", Toast.LENGTH_SHORT).show()
     }

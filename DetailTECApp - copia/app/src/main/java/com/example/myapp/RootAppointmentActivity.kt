@@ -40,7 +40,9 @@ class RootAppointmentActivity : AppCompatActivity() {
 
         // Inicia base de datos
         val database = SQLiteHelper(applicationContext)
+        // Lista de clientes registrados
         val clientList = database.getAllClients()
+        // Inicializacion de informacion de cliente para uso posterior
         var clientInfo = ClientModel(id = "", name = "", user = "", password = "", email = "", points = 0)
         var selectedBranch = ""
         var selectedService = ""
@@ -119,6 +121,7 @@ class RootAppointmentActivity : AppCompatActivity() {
         var finishAppointmentRootB = findViewById<TextView>(R.id.appointmentAcceptButtonRoot)
         finishAppointmentRootB.setOnClickListener {
             var appointment: AppointmentModel
+            // Comprueba que no existan espacios vacios
             if (usernameAppointment.text == "" || usernameAppointment.text.isEmpty() ||
                 plateAppointment.text == "" || plateAppointment.text.isEmpty()) {
                 showErrorMessage()
@@ -126,6 +129,7 @@ class RootAppointmentActivity : AppCompatActivity() {
                 var readyForAppointment = false
                 var counter = 0
                 for (i in clientList) {
+                    // Verificacion de existencia de usuario
                     if (usernameAppointment.text.toString() == clientList.get(counter).id) {
                         clientInfo = clientList.get(counter)
                         readyForAppointment = true
@@ -142,15 +146,10 @@ class RootAppointmentActivity : AppCompatActivity() {
                     var id = clientInfo.id
                     var branchName = selectedBranch
 
+                    // Asignacion de la informacion de la cita en un objeto AppointmentModel
                     appointment = AppointmentModel(carId = carId, date = date, type = type, name = name,
                         id = id, branchName = branchName)
 
-                    Log.d("CAR ID", appointment.carId)
-                    Log.d("DATE", appointment.date)
-                    Log.d("TYPE", appointment.type)
-                    Log.d("NAME", appointment.name)
-                    Log.d("ID", appointment.id)
-                    Log.d("BRANCH NAME", appointment.branchName)
                 } else {
                     showNoClientFoundMessage()
                 }

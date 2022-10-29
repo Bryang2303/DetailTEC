@@ -38,12 +38,15 @@ class LoginActivity : AppCompatActivity() {
                     startActivity(intent)
                     //loginUsername.text = "FUNCIONA"
 
-                } else {
+                } else { // Comprobacion de inicio de sesion como cliente
+
+                    // Lista de todos los clientes registrados
                     val usersList: ArrayList<ClientModel> = database.getAllClients()
 
                     var counter = 0
                     var clientPosition = -1
                     for (i in usersList) {
+                        // Busca la cedula del cliente entre los registros para ver su posicion en usersList
                         if (loginUsername.text.toString() == usersList.get(counter).id) {
                             clientPosition = counter
                         }
@@ -51,8 +54,9 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                     if (clientPosition > -1) {
-                        if (loginUsername.text.toString() == usersList.get(clientPosition).id.toString()
-                            && loginPassword.text.toString() == usersList.get(clientPosition).password.toString()) {
+                        // Autenticacion de datos para incio de sesion exitoso
+                        if (loginUsername.text.toString() == usersList.get(clientPosition).id
+                            && loginPassword.text.toString() == usersList.get(clientPosition).password) {
                             val intent = Intent(this,ClientMenuActivity::class.java)
                             intent.putExtra("CLIENT_POSITION", clientPosition.toString())
                             intent.putExtra("INTENT_NAME",usersList.get(clientPosition).user)

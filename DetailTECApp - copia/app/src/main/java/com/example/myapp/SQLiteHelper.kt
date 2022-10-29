@@ -14,6 +14,7 @@ class SQLiteHelper (context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), Serializable {
 
     companion object {
+        // Constantes para nombres de tablas, base de datos y atributos
         private const val DATABASE_VERSION = 1
         private const val DATABASE_NAME = "detailTec.db"
         private const val TBL_PROVIDER = "tbl_provider"
@@ -65,7 +66,7 @@ class SQLiteHelper (context: Context) :
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        // DO NO CHANGE THE CREATION ORDER
+        // Creacion de todas las tablas
         createProviderTable(db) // #1
         createInputProductTable(db) // #2
         createWorkerTable(db) // #3
@@ -1091,6 +1092,7 @@ class SQLiteHelper (context: Context) :
 
     // End of AppointmentInput Table methods
     // #############################################################################################
+    // Inicio de metodos generalizados para el manejo de la base de datos
 
     private fun insertOnDatabase(contentValues: ContentValues, tableName: String): Long {
         val db = this.writableDatabase
@@ -1132,4 +1134,6 @@ class SQLiteHelper (context: Context) :
 
         return success
     }
+
+    // Fin de metodos generalizados para el manejo de la base de datos
 }

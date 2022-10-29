@@ -94,6 +94,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
                 var locationPosition = -1
 
                 try {
+                    // Intenta parsear el valor ingresado por el usuario
                     locationPosition = Integer.parseInt(deleteLocation.text.toString())
                     readyToDelete = true
                 } catch (e: Exception) {
@@ -102,12 +103,14 @@ class RootClientmanagementActivity : AppCompatActivity() {
 
                 if (readyToDelete) {
                     if ((locationPosition-1) < locationsArray.size) {
+                        // Eliminacion de item del arreglo interno
                         locationsArray.removeAt(locationPosition-1)
                         showRemovedMessage()
                     } else {
                         showErrorMessage()
                     }
                     var position = 0
+                    // Actualizacion de items en pantalla
                     locations.text = ""
                     for (x in locationsArray) {
                         if (position == 0) {
@@ -163,6 +166,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
                 var phonePosition = -1
 
                 try {
+                    // Intenta parsear el valor ingresado por el usuario
                     phonePosition = Integer.parseInt(deletePhone.text.toString())
                     readyToDelete = true
                 } catch (e: Exception) {
@@ -171,12 +175,14 @@ class RootClientmanagementActivity : AppCompatActivity() {
 
                 if (readyToDelete) {
                     if ((phonePosition-1) < phonesArray.size) {
+                        // Eliminacion de item en el arreglo interno
                         phonesArray.removeAt(phonePosition-1)
                         showRemovedMessage()
                     } else {
                         showErrorMessage()
                     }
                     var position = 0
+                    // Actualizacion de items en pantalla
                     phones.text = ""
                     for (x in phonesArray) {
                         if (position == 0) {
@@ -194,11 +200,14 @@ class RootClientmanagementActivity : AppCompatActivity() {
         // Boton para buscar a un cliente por su nombre de usuario
         var searchClientIB = findViewById<ImageButton>(R.id.searchClientImageButtonRoot)
         searchClientIB.setOnClickListener {
+            // Reinicia los arreglos con items del cliente
             locationsArray.removeAll(locationsArray)
             phonesArray.removeAll(phonesArray)
+            // Ubica la posicion del usuarrio en los registros de la base de datos
             clientPosition = setClientInfo(database, id.text.toString(), clientData2)
 
             if (clientPosition > -1) {
+                // Colocacion de informacion en pantalla
                 val clientList: ArrayList<ClientModel> = database.getAllClients()
                 clientID = clientList.get(clientPosition).id
                 locations.text = ""
@@ -249,6 +258,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
         updateClientDataB.setOnClickListener {
             var readyToSave = true
 
+            // Verificacion de espacios vacios
             for (dataInput in clientData2) {
                 if (dataInput.text == "" && dataInput.text.isEmpty()) {
                     readyToSave = false
@@ -258,6 +268,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
             }
 
             if (readyToSave) {
+                // Proceso de actualizacion tras verificacion
                 val clientList: ArrayList<ClientModel> = database.getAllClients()
                 var newName = fName.text.toString()
                 var user = username.text.toString()
@@ -280,6 +291,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
         }
     }
 
+    // Colocacion de informacion del cliente en la pantalla
     private fun setClientInfo(database: SQLiteHelper, id: String, clientData: ArrayList<TextView>): Int {
         val clientsList: ArrayList<ClientModel> = database.getAllClients()
         var clientPosition = -1
@@ -302,6 +314,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
         return clientPosition
     }
 
+    // Actualizacion de direcciones
     private fun updateClientAddresses(database: SQLiteHelper, id: String, locations:ArrayList<String>) {
         database.deleteClientAddress(id)
         var counter = 0
@@ -352,6 +365,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
 //        }
     }
 
+    // Actualizacion de telefonos
     private fun updateClientPhones(database: SQLiteHelper, id: String, phones: ArrayList<String>) {
         database.deleteClientPhone(id)
         var counter = 0

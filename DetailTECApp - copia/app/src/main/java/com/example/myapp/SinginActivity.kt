@@ -91,6 +91,7 @@ class SinginActivity : AppCompatActivity() {
                 var locationPosition = -1
 
                 try {
+                    // Intenta parsear el valor ingresado por el usuario
                     locationPosition = Integer.parseInt(deleteLocation.text.toString())
                     readyToDelete = true
                 } catch (e: Exception) {
@@ -99,12 +100,14 @@ class SinginActivity : AppCompatActivity() {
 
                 if (readyToDelete) {
                     if ((locationPosition-1) < locationsArray.size) {
+                        // Eliminacion del item en el arreglo interno
                         locationsArray.removeAt(locationPosition-1)
                         showRemovedMessage()
                     } else {
                         showErrorMessage()
                     }
                     var position = 0
+                    // Actualizacion de items en pantalla
                     locations.text = ""
                     for (x in locationsArray) {
                         if (position == 0) {
@@ -159,6 +162,7 @@ class SinginActivity : AppCompatActivity() {
                 var phonePosition = -1
 
                 try {
+                    // Intenta parsear el valor ingresado por el usuario
                     phonePosition = Integer.parseInt(deletePhone.text.toString())
                     readyToDelete = true
                 } catch (e: Exception) {
@@ -167,12 +171,14 @@ class SinginActivity : AppCompatActivity() {
 
                 if (readyToDelete) {
                     if ((phonePosition-1) < phonesArray.size) {
+                        // Eliminacion del item del arreglo interno
                         phonesArray.removeAt(phonePosition-1)
                         showRemovedMessage()
                     } else {
                         showErrorMessage()
                     }
                     var position = 0
+                    // Actualizacion de items en pantalla
                     phones.text = ""
                     for (x in phonesArray) {
                         if (position == 0) {
@@ -192,6 +198,7 @@ class SinginActivity : AppCompatActivity() {
         proceedSingInB.setOnClickListener {
             var readyToSave = true
 
+            // Verificacion de espacios vacios
             for (dataInput in clientData){
                 if (dataInput.text == "" || dataInput.text.isEmpty()){
                     readyToSave = false
@@ -233,6 +240,7 @@ class SinginActivity : AppCompatActivity() {
 
     }
 
+    // Agregado de direcciones y telefonos en las tablas respectivas
     private fun addPhonesAndLocations(
         locationsArray: ArrayList<String>,
         phonesArray: ArrayList<String>,
