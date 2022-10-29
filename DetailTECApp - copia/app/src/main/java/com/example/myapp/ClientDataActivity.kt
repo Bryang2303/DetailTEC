@@ -19,13 +19,13 @@ class ClientDataActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_data)
 
-        // Iniciar base de datos
+        // Iniciar base de datos y toma todos los clientes registrados
         val database = SQLiteHelper(applicationContext)
         val clientsList: ArrayList<ClientModel> = database.getAllClients()
 
         // Almacenar el nombre del usuario para poder mantenerse logeado
         val bundle = intent.extras
-        var clientPosition = bundle?.get("CLIENT_POSITION")
+        var clientPosition = bundle?.get("CLIENT_POSITION") // posicion del cliente en clientList
         val name = bundle?.get("INTENT_NAME")
 
 
@@ -99,9 +99,6 @@ class ClientDataActivity : AppCompatActivity() {
         // Boton para eliminar una direccion correspondiente
         var deletelocationsSinginIB = findViewById<ImageButton>(R.id.deleteLocationImageButtonClient)
         deletelocationsSinginIB.setOnClickListener {
-
-            Log.d("LOCATIONS ARRAY", locationsArray.toString())
-
             if (locations.text == "" || locations.text.isEmpty()){
 
                 // restriccion de int
@@ -111,6 +108,7 @@ class ClientDataActivity : AppCompatActivity() {
                 var locationPosition = -1
 
                 try {
+                    // Intenta parsear el valor ingresado por el usuario
                     locationPosition = Integer.parseInt(deleteLocation.text.toString())
                     readyToDelete = true
                 } catch (e: Exception) {
@@ -119,12 +117,15 @@ class ClientDataActivity : AppCompatActivity() {
 
                 if (readyToDelete) {
                     if ((locationPosition-1) < locationsArray.size) {
+                        // Eliminacion del item en el registro interno (no mostrado al usuario)
                         locationsArray.removeAt(locationPosition-1)
                         showRemovedMessage()
                     } else {
                         showErrorMessage()
                     }
                     var position = 0
+
+                    // Actualizacion de datos en pantalla
                     locations.text = ""
                     for (x in locationsArray) {
                         if (position == 0) {
@@ -183,6 +184,7 @@ class ClientDataActivity : AppCompatActivity() {
                 var phonePosition = -1
 
                 try {
+                    // Intenta parsear el valor ingresado por el usuario
                     phonePosition = Integer.parseInt(deletePhone.text.toString())
                     readyToDelete = true
                 } catch (e: Exception) {
@@ -191,12 +193,14 @@ class ClientDataActivity : AppCompatActivity() {
 
                 if (readyToDelete) {
                     if ((phonePosition-1) < phonesArray.size) {
+                        // Elimina el item del arreglo interno
                         phonesArray.removeAt(phonePosition-1)
                         showRemovedMessage()
                     } else {
                         showErrorMessage()
                     }
                     var position = 0
+                    // Actualizacion de los items en pantalla
                     phones.text = ""
                     for (x in phonesArray) {
                         if (position == 0) {
@@ -213,9 +217,11 @@ class ClientDataActivity : AppCompatActivity() {
 
         }
 
+        // Listas con todos los telefonos y todas las direcciones de todos los clientes registrados
         var clientPhones: ArrayList<ClientPhoneModel> = database.getAllClientPhones()
         var clientAddresses: ArrayList<ClientAddressModel> = database.getAllClientAddresses()
 
+        // Configuracion de TextView al iniciar activity
         var positionCounter = 0
         var itemsCounter = 0
         for (i in clientPhones) {
@@ -236,6 +242,7 @@ class ClientDataActivity : AppCompatActivity() {
             positionCounter++
         }
 
+        // Configuracion de TextView al iniciar activity
         positionCounter = 0
         itemsCounter = 0
         for (i in clientAddresses) {
@@ -261,6 +268,7 @@ class ClientDataActivity : AppCompatActivity() {
             var readyToUpdate = true
 
             for (dataInput in clientData2) {
+                // Comprobacion de espacios en blanco
                 if (dataInput.text == "" || dataInput.text.isEmpty()) {
                     readyToUpdate = false
                     // showErrorMessage
@@ -269,6 +277,7 @@ class ClientDataActivity : AppCompatActivity() {
             }
 
             if (readyToUpdate) {
+                // Asignacion de variables con toda la informacion del cliente
                 val clientPos = Integer.parseInt(clientPosition.toString())
                 var id = clientsList.get(clientPos).id
                 var name = fName.text.toString()
@@ -277,15 +286,15 @@ class ClientDataActivity : AppCompatActivity() {
                 var email = email.text.toString()
                 var points = clientsList.get(clientPos).points
 
+                // Objeto parametro para actualizar el cliente
                 val client = ClientModel(id = id, name = name, user = username, password = password,
                     email = email, points = points)
 
-                Log.d("RESPUESTA", locationsArray.size.toString())
-                Log.d("RESPUESTA", phonesArray.size.toString())
-
+                // Funciones para actualizar los telefonos y direcciones del cliente actual
                 updateClientAddresses(database, id, locationsArray)
                 updateClientPhones(database, id, phonesArray)
 
+                // Comprobacion de correcta actualizacion (debe ser mayor a -1)
                 if (database.updateClient(client) < 0) {
                     showErrorMessage()
                 } else {
@@ -297,6 +306,7 @@ class ClientDataActivity : AppCompatActivity() {
     }
 
     private fun updateClientAddresses(database: SQLiteHelper, id: String, locations:ArrayList<String>) {
+        // Elimina todas las tuplas asociadas al usuario para agregar solo las que se hayan dejado y las nuevas agregadas
         database.deleteClientAddress(id)
         var counter = 0
         for (i in locations) {
@@ -304,51 +314,10 @@ class ClientDataActivity : AppCompatActivity() {
             database.insertClientAddress(clientAddress)
             counter++
         }
-//        val locationList = database.getAllClientAddresses()
-//        var firstCounter = 0
-//        var notExisting = true
-//        for (i in locationList) {
-//            var secondCounter = 0
-//            while (secondCounter < locations.size && notExisting) {
-//                Log.d("RESPUESTA", locationList.get(firstCounter).address)
-//                Log.d("RESPUESTA", locations.get(secondCounter))
-//                if (id == locationList.get(firstCounter).id && locationList.get(firstCounter).address == locations.get(secondCounter)) {
-//                    notExisting = false
-//                }
-//
-//                secondCounter++
-//            }
-//
-//            if (id == locationList.get(firstCounter).id && notExisting) {
-//                database.deleteClientAddress(id, locationList.get(firstCounter).address)
-//            }
-//            notExisting = true
-//            firstCounter++
-//        }
-//
-//        firstCounter = 0
-//        notExisting = true
-//        for (i in locations) {
-//            var secondCounter = 0
-//            while (secondCounter < locationList.size && notExisting) {
-//                if (id == locationList.get(secondCounter).id && locations.get(firstCounter) == locationList.get(secondCounter).address) {
-//                    notExisting = false
-//                }
-//
-//                secondCounter++
-//            }
-//
-//            if (notExisting) {
-//                val clientAddress = ClientAddressModel(id = id, address = locations.get(firstCounter))
-//                database.insertClientAddress(clientAddress)
-//            }
-//
-//            notExisting = true
-//            firstCounter++
-//        }
     }
 
     private fun updateClientPhones(database: SQLiteHelper, id: String, phones: ArrayList<String>) {
+        // Elimina todas las tuplas asociadas al usuario para agregar solo las que se hayan dejado y las nuevas agregadas
         database.deleteClientPhone(id)
         var counter = 0
         for (i in phones) {
@@ -356,45 +325,6 @@ class ClientDataActivity : AppCompatActivity() {
             database.insertClientPhone(clientPhone)
             counter++
         }
-        // Revisar números existentes
-//        val phonesList = database.getAllClientPhones()
-//        var firstCounter = 0
-//        var notExisting = true
-//        for (i in phonesList) {
-//            var secondCounter = 0
-//            while (secondCounter < phones.size && notExisting) {
-//                if (id == phonesList.get(firstCounter).id && phonesList.get(firstCounter).phone == phones.get(secondCounter)) {
-//                    notExisting = false
-//                }
-//                secondCounter++
-//            }
-//
-//            if (id == phonesList.get(firstCounter).id && notExisting) {
-//                database.deleteClientPhone(id, phonesList.get(firstCounter).phone)
-//            }
-//            notExisting = true
-//            firstCounter++
-//        }
-//
-//        firstCounter = 0
-//        notExisting = true
-//        for (i in phones) {
-//            var secondCounter = 0
-//            while (secondCounter < phonesList.size && notExisting) {
-//                if (id == phonesList.get(secondCounter).id && phones.get(firstCounter) == phonesList.get(secondCounter).phone) {
-//                    notExisting = false
-//                }
-//
-//                secondCounter++
-//            }
-//
-//            if (notExisting) {
-//                val clientPhone = ClientPhoneModel(id =  id, phone = phones.get(firstCounter))
-//                database.insertClientPhone(clientPhone)
-//            }
-//            notExisting = true
-//            firstCounter++
-//        }
     }
 
     fun showRemovedMessage() {

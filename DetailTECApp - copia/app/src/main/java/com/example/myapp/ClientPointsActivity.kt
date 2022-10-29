@@ -12,7 +12,7 @@ class ClientPointsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_points)
 
-        // Inicia la base de datos
+        // Inicia la base de datos y toma una lista de todos los clientes registrados
         val database = SQLiteHelper(applicationContext)
         val clientList: ArrayList<ClientModel> = database.getAllClients()
 
@@ -30,11 +30,13 @@ class ClientPointsActivity : AppCompatActivity() {
 
         }
 
+        // Crea un objeto con toda la informacion del cliente
         val clientInfo = clientList.get(Integer.parseInt(clientPosition.toString()))
 
         val availablePoints = findViewById<TextView>(R.id.availablePointstxt)
         val redeemedPoints = findViewById<TextView>(R.id.redeemedPointstxt)
 
+        // Asignacion de los valores del cliente en pantalla
         availablePoints.text = clientInfo.points.toString()
         redeemedPoints.text = "0"
 
