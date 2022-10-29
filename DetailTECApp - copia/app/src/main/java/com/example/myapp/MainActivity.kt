@@ -3,12 +3,9 @@ package com.example.myapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import android.app.ActionBar
 import android.util.Log
-import com.example.myapp.models.ClientAddressModel
 import com.example.myapp.models.ClientModel
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -58,6 +55,7 @@ class MainActivity : AppCompatActivity() {
                             selectedClientArray.add(result.getString(x))
                         }
                         println(selectedClientArray)
+                        insertClientOnPhone(selectedClientArray)
                         selectedClientArray.clear()
                         result.next()
                     }
@@ -147,8 +145,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        fun insertClientServer(Nombre_Completo:String, Cedula:String, Fecha_de_NacimientoC:String,
-                               Usuario:String, Password:String, Correo:String, Puntos:String) {
+        fun insertClientServer(
+            Nombre_Completo:String, Cedula:String, Fecha_de_NacimientoC: String?,
+            Usuario:String, Password:String, Correo:String, Puntos:String) {
             ///println("EL VALOR ES $eee")
             try {
                 /*
@@ -171,16 +170,32 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        fun uploadClientsToServer() {
+            val database = SQLiteHelper(applicationContext)
+            val clientList: ArrayList<ClientModel> = database.getAllClients()
+
+            var counter = 0
+            for (i in clientList) {
+                val id = clientList.get(counter).id
+                val name = clientList.get(counter).name
+                val user = clientList.get(counter).user
+                val password = clientList.get(counter).password
+                val email = clientList.get(counter).email
+                val points = clientList.get(counter).points.toString()
+                insertClientServer(name, id, null, user, password, email, points)
+            }
+        }
+
 
         var logInB = findViewById<TextView>(R.id.loginButton)
         logInB.setOnClickListener {
             val intent = Intent(this,LoginActivity::class.java)
 
             selectClientsServer()
+            uploadClientsToServer()
 
             //insertClientServer("Bryan Gomez","305310094","2001-03-23",
                 //"Bryang2303", "abcde", "bryang2303@gmail.com", "1000")
-            selectClientsServer()
 
 
 //            intent.putExtra("database", database)
@@ -195,6 +210,20 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             //LoginActivity::class.java
         }
+    }
+
+    private fun insertClientOnPhone(clientInformation: ArrayList<String>) {
+        val database = SQLiteHelper(applicationContext)
+        val name = clientInformation.get(0)
+        val id = clientInformation.get(1)
+        val user = clientInformation.get(3)
+        val password = clientInformation.get(4)
+        val email = clientInformation.get(5)
+        val points = Integer.parseInt(clientInformation.get(6))
+
+        val client = ClientModel(id = id, name = name, user = user, password = password,
+            email = email, points = points)
+        database.insertClient(client)
     }
 
 

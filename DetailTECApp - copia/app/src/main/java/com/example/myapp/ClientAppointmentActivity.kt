@@ -237,6 +237,7 @@ class ClientAppointmentActivity : AppCompatActivity() {
 
                 appointment = AppointmentModel(carId = carId, date = date, type = type, name = name,
                     id = id, branchName = branchName)
+                showSuccessfulMessage()
             }
 
             usernameText = usernameAppointmentClient.text.toString()
@@ -317,5 +318,9 @@ class ClientAppointmentActivity : AppCompatActivity() {
     // No se ingresa numero de placa
     fun showPlateMessage() {
         Toast.makeText(this, "Ingrese una placa de vehiculo", Toast.LENGTH_SHORT).show()
+    }
+
+    fun showSuccessfulMessage() {
+        Toast.makeText(this, "Cita agendada correctamente", Toast.LENGTH_SHORT).show()
     }
 }
