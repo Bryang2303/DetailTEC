@@ -12,6 +12,8 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
+import com.example.myapp.models.AppointmentModel
+import com.example.myapp.models.ClientModel
 import com.itextpdf.text.Document
 import com.itextpdf.text.Paragraph
 import com.itextpdf.text.pdf.PdfWriter
@@ -43,6 +45,16 @@ class RootAppointmentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_root_appointment)
+
+        // Inicia base de datos
+        val database = SQLiteHelper(applicationContext)
+        // Lista de clientes registrados
+        val clientList = database.getAllClients()
+        // Inicializacion de informacion de cliente para uso posterior
+        var clientInfo = ClientModel(id = "", name = "", user = "", password = "", email = "", points = 0)
+        var selectedBranch = ""
+        var selectedService = ""
+
         // Boton para volver a la ventana del menu del Administrador
         var backAppointmentRootB = findViewById<TextView>(R.id.backAppointmentButtonRoot)
         backAppointmentRootB.setOnClickListener {
@@ -161,6 +173,7 @@ class RootAppointmentActivity : AppCompatActivity() {
                 AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View, position: Int, id: Long) {
+                    selectedBranch = branchesNamesArray[position]
                     Toast.makeText(this@RootAppointmentActivity,
                         getString(R.string.selected_item) + " " +
                                 "" + branchesNamesArray[position], Toast.LENGTH_SHORT).show()
@@ -175,9 +188,8 @@ class RootAppointmentActivity : AppCompatActivity() {
                 }
             }
         }
+
         // Array de servicios disponibles
-
-
         val services = resources.getStringArray(R.array.services)
         println(services)
 
@@ -192,6 +204,7 @@ class RootAppointmentActivity : AppCompatActivity() {
             AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View, position: Int, id: Long) {
+                    selectedService = carwashesNamesArray[position]
                     Toast.makeText(this@RootAppointmentActivity,
                         getString(R.string.selected_item) + " " +
                                 "" + carwashesNamesArray[position], Toast.LENGTH_SHORT).show()
@@ -199,7 +212,6 @@ class RootAppointmentActivity : AppCompatActivity() {
                     serviceText = carwashesNamesArray[position]
                     carwashPrice = carwashesPricesArray[position]
                 }
-
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
                     // write code to perform some action
@@ -234,6 +246,41 @@ class RootAppointmentActivity : AppCompatActivity() {
         var finishAppointmentRootB = findViewById<TextView>(R.id.appointmentAcceptButtonRoot)
         finishAppointmentRootB.setOnClickListener {
 
+            var appointment: AppointmentModel
+            // Comprueba que no existan espacios vacios
+            if (usernameAppointment.text == "" || usernameAppointment.text.isEmpty() ||
+                plateAppointment.text == "" || plateAppointment.text.isEmpty()) {
+                showErrorMessage()
+            } else {
+                var readyForAppointment = false
+                var counter = 0
+                for (i in clientList) {
+                    // Verificacion de existencia de usuario
+                    if (usernameAppointment.text.toString() == clientList.get(counter).id) {
+                        clientInfo = clientList.get(counter)
+                        readyForAppointment = true
+                    }
+
+                    counter++
+                }
+
+                if (readyForAppointment) {
+                    var carId = plateAppointment.text.toString()
+                    var date = "--"
+                    var type = selectedService
+                    var name = clientInfo.name
+                    var id = clientInfo.id
+                    var branchName = selectedBranch
+
+                    // Asignacion de la informacion de la cita en un objeto AppointmentModel
+                    appointment = AppointmentModel(carId = carId, date = date, type = type, name = name,
+                        id = id, branchName = branchName)
+
+                } else {
+                    showNoClientFoundMessage()
+                }
+            }
+
             usernameText = usernameAppointment.text.toString()
             plateText = plateAppointment.text.toString()
             //insertAppointmentServer(plateText,"2022-11-02",branchText,serviceText,usernameText,usernameText,usernameText,)
@@ -257,6 +304,7 @@ class RootAppointmentActivity : AppCompatActivity() {
             }
         }
     }
+
     // Funcion que permite la generacion de una factura pdf para su posterior almacenado en el dospositivo
     private fun savePdf() {
 
@@ -310,5 +358,13 @@ class RootAppointmentActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    fun showErrorMessage() {
+        Toast.makeText(this, "Datos incompletos", Toast.LENGTH_SHORT).show()
+    }
+
+    fun showNoClientFoundMessage() {
+        Toast.makeText(this, "Usuario inexistente", Toast.LENGTH_SHORT).show()
     }
 }

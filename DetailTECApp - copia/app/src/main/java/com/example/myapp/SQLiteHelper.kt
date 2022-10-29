@@ -14,6 +14,7 @@ class SQLiteHelper (context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), Serializable {
 
     companion object {
+        // Constantes para nombres de tablas, base de datos y atributos
         private const val DATABASE_VERSION = 1
         private const val DATABASE_NAME = "detailTec.db"
         private const val TBL_PROVIDER = "tbl_provider"
@@ -65,7 +66,7 @@ class SQLiteHelper (context: Context) :
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        // DO NO CHANGE THE CREATION ORDER
+        // Creacion de todas las tablas
         createProviderTable(db) // #1
         createInputProductTable(db) // #2
         createWorkerTable(db) // #3
@@ -711,21 +712,21 @@ class SQLiteHelper (context: Context) :
         val appointmentsList: ArrayList<AppointmentModel> = ArrayList()
         val cursor = getFromDatabase(TBL_APPOINTMENT)
 
-        var carId: Int
+        var carId: String
         var date: String
         var type: String
         var name: String
-        var id: Int
+        var id: String
         var branchName: String
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    carId = cursor.getInt(cursor.getColumnIndex(CAR_ID))
+                    carId = cursor.getString(cursor.getColumnIndex(CAR_ID))
                     date = cursor.getString(cursor.getColumnIndex(DATE))
                     type = cursor.getString(cursor.getColumnIndex(TYPE))
                     name = cursor.getString(cursor.getColumnIndex(NAME))
-                    id = cursor.getInt(cursor.getColumnIndex(ID))
+                    id = cursor.getString(cursor.getColumnIndex(ID))
                     branchName = cursor.getString(cursor.getColumnIndex(BRANCH_NAME))
 
                     val appointment = AppointmentModel(carId = carId, date = date, type = type,
@@ -1091,6 +1092,7 @@ class SQLiteHelper (context: Context) :
 
     // End of AppointmentInput Table methods
     // #############################################################################################
+    // Inicio de metodos generalizados para el manejo de la base de datos
 
     private fun insertOnDatabase(contentValues: ContentValues, tableName: String): Long {
         val db = this.writableDatabase
@@ -1132,4 +1134,6 @@ class SQLiteHelper (context: Context) :
 
         return success
     }
+
+    // Fin de metodos generalizados para el manejo de la base de datos
 }

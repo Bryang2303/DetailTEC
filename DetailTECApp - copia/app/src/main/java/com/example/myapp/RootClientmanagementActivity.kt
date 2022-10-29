@@ -12,6 +12,7 @@ import android.widget.Toast
 import com.example.myapp.models.ClientAddressModel
 import com.example.myapp.models.ClientModel
 import com.example.myapp.models.ClientPhoneModel
+import java.lang.Exception
 
 // Clase de la ventana de la gestion de Clientes
 class RootClientmanagementActivity : AppCompatActivity() {
@@ -71,6 +72,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
                 locationsCount++
             } else {
                 //locationsMap[locationsCount] = newLocation.text.toString()
+                locationsCount = locationsArray.size
                 locationsArray.add(newLocation.text.toString())
                 indexLocationsArray.add((locationsCount+1).toString())
 
@@ -88,29 +90,37 @@ class RootClientmanagementActivity : AppCompatActivity() {
                 // restriccion de int
             } else {
                 // Remover una direccion
-                for (x in 0..locationsCount-1){
-                    if (indexLocationsArray[x]==deleteLocation.text.toString()){
-                        indexLocationsArray.removeAt(x)
-                        locationsArray.removeAt(x)
-                        locationsCount--
-                        break
-                    }
+                var readyToDelete = false
+                var locationPosition = -1
+
+                try {
+                    // Intenta parsear el valor ingresado por el usuario
+                    locationPosition = Integer.parseInt(deleteLocation.text.toString())
+                    readyToDelete = true
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-                for (z in 0..locationsCount-1){
-                    if (indexLocationsArray[z].toInt()>deleteLocation.text.toString().toInt()){
-                        var newNum = indexLocationsArray[z].toInt()-1
-                        indexLocationsArray[z] = newNum.toString()
-                        println(locationsArray)
-                        println(indexLocationsArray)
+
+                if (readyToDelete) {
+                    if ((locationPosition-1) < locationsArray.size) {
+                        // Eliminacion de item del arreglo interno
+                        locationsArray.removeAt(locationPosition-1)
+                        showRemovedMessage()
+                    } else {
+                        showErrorMessage()
                     }
-                }
-                locations.text =""
-                deleteLocation.text = ""
+                    var position = 0
+                    // Actualizacion de items en pantalla
+                    locations.text = ""
+                    for (x in locationsArray) {
+                        if (position == 0) {
+                            locations.text = (position+1).toString() + ". " + locationsArray.get(position)
+                        } else {
+                            locations.text = locations.text.toString() + "\r\n" + (position+1).toString() + ". " + locationsArray.get(position)
+                        }
 
-
-                for (y in 0..locationsCount-1){
-                    locations.text = locations.text.toString()+"\r\n"+ indexLocationsArray[y] + ". " + locationsArray[y]
-
+                        position++
+                    }
                 }
             }
         }
@@ -133,6 +143,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
                 phonesCount++
             } else {
                 //locationsMap[locationsCount] = newLocation.text.toString()
+                phonesCount = phonesArray.size
                 phonesArray.add(newPhone.text.toString())
                 indexPhonesArray.add((phonesCount+1).toString())
 
@@ -151,43 +162,52 @@ class RootClientmanagementActivity : AppCompatActivity() {
                 // restriccion de int
             } else {
                 // Remover un telefono
-                for (x in 0..phonesCount-1){
-                    if (indexPhonesArray[x]==deletePhone.text.toString()){
-                        indexPhonesArray.removeAt(x)
-                        phonesArray.removeAt(x)
-                        phonesCount--
-                        break
+                var readyToDelete = false
+                var phonePosition = -1
+
+                try {
+                    // Intenta parsear el valor ingresado por el usuario
+                    phonePosition = Integer.parseInt(deletePhone.text.toString())
+                    readyToDelete = true
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                if (readyToDelete) {
+                    if ((phonePosition-1) < phonesArray.size) {
+                        // Eliminacion de item en el arreglo interno
+                        phonesArray.removeAt(phonePosition-1)
+                        showRemovedMessage()
+                    } else {
+                        showErrorMessage()
+                    }
+                    var position = 0
+                    // Actualizacion de items en pantalla
+                    phones.text = ""
+                    for (x in phonesArray) {
+                        if (position == 0) {
+                            phones.text = (position+1).toString() + ". " + phonesArray.get(position)
+                        } else {
+                            phones.text = phones.text.toString() + "\r\n" + (position+1).toString() + ". " + phonesArray.get(position)
+                        }
+
+                        position++
                     }
                 }
-                for (z in 0..phonesCount-1){
-                    if (indexPhonesArray[z].toInt()>deletePhone.text.toString().toInt()){
-                        var newNum = indexPhonesArray[z].toInt()-1
-                        indexPhonesArray[z] = newNum.toString()
-                        println(phonesArray)
-                        println(indexPhonesArray)
-                    }
-                }
-                phones.text =""
-                deletePhone.text = ""
-
-
-                for (y in 0..phonesCount-1){
-                    phones.text = phones.text.toString()+"\r\n"+ indexPhonesArray[y] + ". " + phonesArray[y]
-                }
-                //println(phonesArray)
-                //println(indexPhonesArray)
-
             }
         }
 
         // Boton para buscar a un cliente por su nombre de usuario
         var searchClientIB = findViewById<ImageButton>(R.id.searchClientImageButtonRoot)
         searchClientIB.setOnClickListener {
+            // Reinicia los arreglos con items del cliente
             locationsArray.removeAll(locationsArray)
             phonesArray.removeAll(phonesArray)
+            // Ubica la posicion del usuarrio en los registros de la base de datos
             clientPosition = setClientInfo(database, id.text.toString(), clientData2)
 
             if (clientPosition > -1) {
+                // Colocacion de informacion en pantalla
                 val clientList: ArrayList<ClientModel> = database.getAllClients()
                 clientID = clientList.get(clientPosition).id
                 locations.text = ""
@@ -238,6 +258,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
         updateClientDataB.setOnClickListener {
             var readyToSave = true
 
+            // Verificacion de espacios vacios
             for (dataInput in clientData2) {
                 if (dataInput.text == "" && dataInput.text.isEmpty()) {
                     readyToSave = false
@@ -247,6 +268,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
             }
 
             if (readyToSave) {
+                // Proceso de actualizacion tras verificacion
                 val clientList: ArrayList<ClientModel> = database.getAllClients()
                 var newName = fName.text.toString()
                 var user = username.text.toString()
@@ -269,6 +291,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
         }
     }
 
+    // Colocacion de informacion del cliente en la pantalla
     private fun setClientInfo(database: SQLiteHelper, id: String, clientData: ArrayList<TextView>): Int {
         val clientsList: ArrayList<ClientModel> = database.getAllClients()
         var clientPosition = -1
@@ -291,6 +314,7 @@ class RootClientmanagementActivity : AppCompatActivity() {
         return clientPosition
     }
 
+    // Actualizacion de direcciones
     private fun updateClientAddresses(database: SQLiteHelper, id: String, locations:ArrayList<String>) {
         database.deleteClientAddress(id)
         var counter = 0
@@ -299,48 +323,9 @@ class RootClientmanagementActivity : AppCompatActivity() {
             database.insertClientAddress(clientAddress)
             counter++
         }
-//        val locationList = database.getAllClientAddresses()
-//        var firstCounter = 0
-//        var notExisting = true
-//        for (i in locationList) {
-//            var secondCounter = 0
-//            while (secondCounter < locations.size && notExisting) {
-//                if (id == locationList.get(firstCounter).id && locationList.get(firstCounter).address == locations.get(secondCounter)) {
-//                    notExisting = false
-//                }
-//
-//                secondCounter++
-//            }
-//
-//            if (id == locationList.get(firstCounter).id && notExisting) {
-//                database.deleteClientAddress(id)
-//            }
-//            notExisting = true
-//            firstCounter++
-//        }
-//
-//        firstCounter = 0
-//        notExisting = true
-//        for (i in locations) {
-//            var secondCounter = 0
-//            while (secondCounter < locationList.size && notExisting) {
-//                if (id == locationList.get(secondCounter).id && locations.get(firstCounter) == locationList.get(secondCounter).address) {
-//                    notExisting = false
-//                }
-//
-//                secondCounter++
-//            }
-//
-//            if (notExisting) {
-//                val clientAddress = ClientAddressModel(id = id, address = locations.get(firstCounter))
-//                database.insertClientAddress(clientAddress)
-//            }
-//
-//            notExisting = true
-//            firstCounter++
-//        }
     }
 
+    // Actualizacion de telefonos
     private fun updateClientPhones(database: SQLiteHelper, id: String, phones: ArrayList<String>) {
         database.deleteClientPhone(id)
         var counter = 0
@@ -350,46 +335,10 @@ class RootClientmanagementActivity : AppCompatActivity() {
             counter++
         }
     }
-        // Revisar números existentes
-//        val phonesList = database.getAllClientPhones()
-//        var firstCounter = 0
-//        var notExisting = true
-//        for (i in phonesList) {
-//            var secondCounter = 0
-//            while (secondCounter < phones.size && notExisting) {
-//                if (id == phonesList.get(firstCounter).id && phonesList.get(firstCounter).phone == phones.get(secondCounter)) {
-//                    notExisting = false
-//                }
-//                secondCounter++
-//            }
-//
-//            if (id == phonesList.get(firstCounter).id && notExisting) {
-//                database.deleteClientPhone(id)
-//            }
-//            notExisting = true
-//            firstCounter++
-//        }
-//
-//        firstCounter = 0
-//        notExisting = true
-//        for (i in phones) {
-//            var secondCounter = 0
-//            while (secondCounter < phonesList.size && notExisting) {
-//                if (id == phonesList.get(secondCounter).id && phones.get(firstCounter) == phonesList.get(secondCounter).phone) {
-//                    notExisting = false
-//                }
-//
-//                secondCounter++
-//            }
-//
-//            if (notExisting) {
-//                val clientPhone = ClientPhoneModel(id =  id, phone = phones.get(firstCounter))
-//                database.insertClientPhone(clientPhone)
-//            }
-//            notExisting = true
-//            firstCounter++
-//        }
-//    }
+
+    fun showRemovedMessage() {
+        Toast.makeText(this, "Item eliminado", Toast.LENGTH_SHORT).show()
+    }
 
     fun showErrorMessage(){
         Toast.makeText(this,"Ha ocurrido un error en la actualización de datos", Toast.LENGTH_SHORT).show()

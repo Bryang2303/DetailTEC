@@ -10,6 +10,7 @@ import android.widget.Toast
 import com.example.myapp.models.ClientAddressModel
 import com.example.myapp.models.ClientModel
 import com.example.myapp.models.ClientPhoneModel
+import java.lang.Exception
 
 // Clase de la ventana de inicio de sesion
 class SinginActivity : AppCompatActivity() {
@@ -68,6 +69,7 @@ class SinginActivity : AppCompatActivity() {
                 locationsCount++
             } else {
                 //locationsMap[locationsCount] = newLocation.text.toString()
+                locationsCount = locationsArray.size
                 locationsArray.add(newLocation.text.toString())
                 indexLocationsArray.add((locationsCount+1).toString())
 
@@ -85,32 +87,41 @@ class SinginActivity : AppCompatActivity() {
                 // restriccion de int
             } else {
                 // Remover una direccion
-                for (x in 0..locationsCount-1){
-                    if (indexLocationsArray[x]==deleteLocation.text.toString()){
-                        indexLocationsArray.removeAt(x)
-                        locationsArray.removeAt(x)
-                        locationsCount--
-                        break
-                    }
+                var readyToDelete = false
+                var locationPosition = -1
+
+                try {
+                    // Intenta parsear el valor ingresado por el usuario
+                    locationPosition = Integer.parseInt(deleteLocation.text.toString())
+                    readyToDelete = true
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-                for (z in 0..locationsCount-1){
-                    if (indexLocationsArray[z].toInt()>deleteLocation.text.toString().toInt()){
-                        var newNum = indexLocationsArray[z].toInt()-1
-                        indexLocationsArray[z] = newNum.toString()
-                        println(locationsArray)
-                        println(indexLocationsArray)
+
+                if (readyToDelete) {
+                    if ((locationPosition-1) < locationsArray.size) {
+                        // Eliminacion del item en el arreglo interno
+                        locationsArray.removeAt(locationPosition-1)
+                        showRemovedMessage()
+                    } else {
+                        showErrorMessage()
                     }
-                }
-                locations.text =""
-                deleteLocation.text = ""
+                    var position = 0
+                    // Actualizacion de items en pantalla
+                    locations.text = ""
+                    for (x in locationsArray) {
+                        if (position == 0) {
+                            locations.text = (position+1).toString() + ". " + locationsArray.get(position)
+                        } else {
+                            locations.text = locations.text.toString() + "\r\n" + (position+1).toString() + ". " + locationsArray.get(position)
+                        }
 
-
-                for (y in 0..locationsCount-1){
-                    locations.text = locations.text.toString()+"\r\n"+ indexLocationsArray[y] + ". " + locationsArray[y]
-
+                        position++
+                    }
                 }
             }
         }
+
         // Contador de telefonos del cliente, al ser multivaluado, el algoritmo permite la adicion o eliminacion de tantos numeros telefonicos como sea posible
         var phonesCount = 0
 
@@ -129,6 +140,7 @@ class SinginActivity : AppCompatActivity() {
                 phonesCount++
             } else {
                 //locationsMap[locationsCount] = newLocation.text.toString()
+                phonesCount = phonesArray.size
                 phonesArray.add(newPhone.text.toString())
                 indexPhonesArray.add((phonesCount+1).toString())
 
@@ -138,6 +150,7 @@ class SinginActivity : AppCompatActivity() {
             newPhone.text = ""
 
         }
+
         // Boton para eliminar un telefono correspondiente
         var deletephonesSinginIB = findViewById<ImageButton>(R.id.deletePhoneImageButton)
         deletephonesSinginIB.setOnClickListener {
@@ -147,51 +160,54 @@ class SinginActivity : AppCompatActivity() {
                 // restriccion de int
             } else {
                 // Remover un telefono
-                for (x in 0..phonesCount-1){
-                    if (indexPhonesArray[x]==deletePhone.text.toString()){
-                        indexPhonesArray.removeAt(x)
-                        phonesArray.removeAt(x)
-                        phonesCount--
-                        break
+                var readyToDelete = false
+                var phonePosition = -1
+
+                try {
+                    // Intenta parsear el valor ingresado por el usuario
+                    phonePosition = Integer.parseInt(deletePhone.text.toString())
+                    readyToDelete = true
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                if (readyToDelete) {
+                    if ((phonePosition-1) < phonesArray.size) {
+                        // Eliminacion del item del arreglo interno
+                        phonesArray.removeAt(phonePosition-1)
+                        showRemovedMessage()
+                    } else {
+                        showErrorMessage()
+                    }
+                    var position = 0
+                    // Actualizacion de items en pantalla
+                    phones.text = ""
+                    for (x in phonesArray) {
+                        if (position == 0) {
+                            phones.text = (position+1).toString() + ". " + phonesArray.get(position)
+                        } else {
+                            phones.text = phones.text.toString() + "\r\n" + (position+1).toString() + ". " + phonesArray.get(position)
+                        }
+
+                        position++
                     }
                 }
-                for (z in 0..phonesCount-1){
-                    if (indexPhonesArray[z].toInt()>deletePhone.text.toString().toInt()){
-                        var newNum = indexPhonesArray[z].toInt()-1
-                        indexPhonesArray[z] = newNum.toString()
-                        println(phonesArray)
-                        println(indexPhonesArray)
-                    }
-                }
-                phones.text =""
-                deletePhone.text = ""
-
-
-                for (y in 0..phonesCount-1){
-                    phones.text = phones.text.toString()+"\r\n"+ indexPhonesArray[y] + ". " + phonesArray[y]
-                }
-                //println(phonesArray)
-                //println(indexPhonesArray)
             }
 
         }
+
         // Boton para proceder luego del registro
         var proceedSingInB = findViewById<TextView>(R.id.SinginAcceptButton)
         proceedSingInB.setOnClickListener {
             var readyToSave = true
 
+            // Verificacion de espacios vacios
             for (dataInput in clientData){
                 if (dataInput.text == "" || dataInput.text.isEmpty()){
                     readyToSave = false
                     showErrorSingin()
                     break
                 }
-//                else {
-//                    val intent = Intent(this,LoginActivity::class.java)
-//                    startActivity(intent)
-//                    //dataInput.text = "FUNCIONA"
-//
-//                }
             }
 
             // Almacenamiento en base de datos
@@ -214,13 +230,10 @@ class SinginActivity : AppCompatActivity() {
                     existingMessage()
                 }
             }
-
-
         }
-
-
     }
 
+    // Agregado de direcciones y telefonos en las tablas respectivas
     private fun addPhonesAndLocations(
         locationsArray: ArrayList<String>,
         phonesArray: ArrayList<String>,
@@ -273,6 +286,12 @@ class SinginActivity : AppCompatActivity() {
         Toast.makeText(this,"El usuario ingresado ya existe", Toast.LENGTH_SHORT).show()
     }
 
+    fun showRemovedMessage() {
+        Toast.makeText(this, "Item eliminado", Toast.LENGTH_SHORT).show()
+    }
 
+    fun showErrorMessage() {
+        Toast.makeText(this, "Ha ocurrido un error", Toast.LENGTH_SHORT).show()
+    }
 
 }

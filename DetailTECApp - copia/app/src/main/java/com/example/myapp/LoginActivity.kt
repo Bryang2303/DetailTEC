@@ -32,6 +32,7 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
             //LoginActivity::class.java
         }
+
         // DATOS DEL INICIO DE SESION
         var loginUsername = findViewById<TextView>(R.id.usernameLoginEditText)
         var loginPassword = findViewById<TextView>(R.id.passwordLoginEditText)
@@ -189,14 +190,8 @@ class LoginActivity : AppCompatActivity() {
         // Boton para acceder a su usuario
         var proceedLogInB = findViewById<TextView>(R.id.loginAcceptButton)
         proceedLogInB.setOnClickListener {
-
-            //selectClientsServer()
-            //selectBranchesServer()
-            //selectAppointmentsServer()
-
             //insertClientServer("Bryan Gomez","305310094","2001-03-23",
                 //"Bryang2303", "abcde", "bryang2303@gmail.com", "1000")
-            //selectClientsServer()
 
             if (loginPassword.text.isNotEmpty() && loginUsername.text.isNotEmpty()){
                 // Acceso al usuario administrador
@@ -206,12 +201,15 @@ class LoginActivity : AppCompatActivity() {
                     startActivity(intent)
                     //loginUsername.text = "FUNCIONA"
 
-                } else {
+                } else { // Comprobacion de inicio de sesion como cliente
+
+                    // Lista de todos los clientes registrados
                     val usersList: ArrayList<ClientModel> = database.getAllClients()
 
                     var counter = 0
                     var clientPosition = -1
                     for (i in usersList) {
+                        // Busca la cedula del cliente entre los registros para ver su posicion en usersList
                         if (loginUsername.text.toString() == usersList.get(counter).id) {
                             clientPosition = counter
                         }
@@ -219,8 +217,9 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                     if (clientPosition > -1) {
-                        if (loginUsername.text.toString() == usersList.get(clientPosition).id.toString()
-                            && loginPassword.text.toString() == usersList.get(clientPosition).password.toString()) {
+                        // Autenticacion de datos para incio de sesion exitoso
+                        if (loginUsername.text.toString() == usersList.get(clientPosition).id
+                            && loginPassword.text.toString() == usersList.get(clientPosition).password) {
                             val intent = Intent(this,ClientMenuActivity::class.java)
                             intent.putExtra("CLIENT_POSITION", clientPosition.toString())
                             intent.putExtra("INTENT_NAME",usersList.get(clientPosition).user)
@@ -232,18 +231,12 @@ class LoginActivity : AppCompatActivity() {
                         showErrorLogin()
                     }
                     // Acceso a cualquier usuario Cliente
-
-
-
                 }
-
             } else {
                 // Si los datos de inicio son invalidos
                 showErrorLogin()
             }
-
         }
-
     }
 
     // Funcion que muestra un mensaje de error en caso de haber realizado un inicio de sesion incorrectamente

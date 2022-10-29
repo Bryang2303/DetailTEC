@@ -9,6 +9,7 @@ import android.widget.Toast
 import android.app.ActionBar
 import android.util.Log
 import com.example.myapp.models.ClientAddressModel
+import com.example.myapp.models.ClientModel
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
@@ -22,12 +23,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         // Inicio de la base de datos
         val database = SQLiteHelper(applicationContext)
-//        database.deleteClientAddress("208140292")
-//        val clientAddress = ClientAddressModel(id = "208140292", address = "Zarcero")
-//        database.insertClientAddress(clientAddress)
 
         // Texto de bienvenida
         var HelloText = findViewById<TextView>(R.id.Hellotxt)
@@ -180,8 +177,6 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this,LoginActivity::class.java)
 
             selectClientsServer()
-            //selectBranchesServer()
-            //selectAppointmentsServer()
 
             //insertClientServer("Bryan Gomez","305310094","2001-03-23",
                 //"Bryang2303", "abcde", "bryang2303@gmail.com", "1000")
@@ -200,16 +195,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             //LoginActivity::class.java
         }
-
-        //HelloText.text = "BYE WORLD"
-
-        //variablesConstantes()
-        //funciones("ABC",1)
-        //clases()
-    }
-    // Funcion para mostrar un error en donde el nombre de usuario se encuentra vacio
-    fun showErrorName(){
-        Toast.makeText(this,"El nombre de usuario no puede ser vacio",Toast.LENGTH_SHORT).show()
     }
 
 
