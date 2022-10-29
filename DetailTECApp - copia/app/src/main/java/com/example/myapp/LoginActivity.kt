@@ -190,14 +190,14 @@ class LoginActivity : AppCompatActivity() {
         var proceedLogInB = findViewById<TextView>(R.id.loginAcceptButton)
         proceedLogInB.setOnClickListener {
 
-            selectClientsServer()
+            //selectClientsServer()
             //selectBranchesServer()
             //selectAppointmentsServer()
 
-            insertClientServer("Bryan Gomez","305310094","2001-03-23",
-                "Bryang2303", "abcde", "bryang2303@gmail.com", "1000")
-            selectClientsServer()
-            /*////////////////////////////////////////////////////////////////////////////
+            //insertClientServer("Bryan Gomez","305310094","2001-03-23",
+                //"Bryang2303", "abcde", "bryang2303@gmail.com", "1000")
+            //selectClientsServer()
+
             if (loginPassword.text.isNotEmpty() && loginUsername.text.isNotEmpty()){
                 // Acceso al usuario administrador
                 if (loginPassword.text.toString()=="123" && loginUsername.text.toString()=="Root"){
@@ -240,7 +240,7 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 // Si los datos de inicio son invalidos
                 showErrorLogin()
-            }*///////////////////////////////////////////////////////////////////
+            }
 
         }
 

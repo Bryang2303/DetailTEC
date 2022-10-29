@@ -12,7 +12,7 @@ class ConnectSql {
     private val db = "prueba"
     private val username = "sa"
     private val password = "12345678"
-
+    //172.18.235.174
     fun dbCon(): Connection? {
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
@@ -20,7 +20,7 @@ class ConnectSql {
         val connString : String
         try {
             Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance()
-            connString = "jdbc:jtds:sqlserver://192.168.18.216:54335;" + "databaseName=DetailTEC;user=sa;password=12345678;"
+            connString = "jdbc:jtds:sqlserver:/192.168.18.216:54335;" + "databaseName=DetailTEC;user=sa;password=12345678;"
 
             conn = DriverManager.getConnection(connString)
 

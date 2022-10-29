@@ -16,11 +16,17 @@ import com.itextpdf.text.Paragraph
 import com.itextpdf.text.pdf.PdfWriter
 import java.io.FileOutputStream
 import java.lang.Exception
+import java.sql.ResultSet
+import java.sql.SQLException
+import java.sql.Statement
 import java.util.*
 // Clase de la ventana de solicitud de citas del Cliente
 class ClientAppointmentActivity : AppCompatActivity() {
+
+    private var connectSql = ConnectSql()
     // Variables de texto para la generacion de la factura
     val STORAGE_CODE = 1001
+    var carwashPrice = ""
     var serviceText = ""
     var branchText = ""
     var usernameText = ""
@@ -49,6 +55,95 @@ class ClientAppointmentActivity : AppCompatActivity() {
             //LoginActivity::class.java
         }
 
+
+        var branchesNamesArray: ArrayList<String> = arrayListOf()
+        try {
+            var count = 0
+
+            val querry2: String = "Select count(Nombre) from SUCURSAL"
+            val st2: Statement? = connectSql.dbCon()?.createStatement()
+            val result2: ResultSet? = st2?.executeQuery(querry2)
+            if (result2 != null) {
+                result2.next()
+                count = result2.getInt(1)
+            }
+
+            val querry: String = "Select Nombre, Provincia, Canton, Distrito, Telefono, Fecha_de_Apertura from SUCURSAL"
+            val st: Statement? = connectSql.dbCon()?.createStatement()
+            val result: ResultSet? = st?.executeQuery(querry)
+
+            if (result != null) {
+                result.next()
+
+                var selectedBranchArray: ArrayList<String> = arrayListOf()
+
+
+                for (x in 1..count) {
+                    for (x in 1..2) {
+                        //println(result.getString(x))
+                        selectedBranchArray.add(result.getString(x))
+                        if (x==1){
+                            branchesNamesArray.add(result.getString(x)+", "+result.getString(x+1))
+                        }
+
+
+                    }
+                    println(selectedBranchArray)
+                    selectedBranchArray.clear()
+                    result.next()
+                }
+
+            }
+            Toast.makeText(this,"Datos sobre las citas obtenidos",Toast.LENGTH_SHORT).show()
+        } catch (ex: SQLException){
+            Toast.makeText(this,"Datos sobre las citas no encontrados", Toast.LENGTH_SHORT).show()
+        }
+
+        var carwashesNamesArray: ArrayList<String> = arrayListOf()
+        var carwashesPricesArray: ArrayList<String> = arrayListOf()
+        try {
+            var count = 0
+
+            val querry2: String = "Select count(Tipo) from LAVADO"
+            val st2: Statement? = connectSql.dbCon()?.createStatement()
+            val result2: ResultSet? = st2?.executeQuery(querry2)
+            if (result2 != null) {
+                result2.next()
+                count = result2.getInt(1)
+            }
+
+            val querry: String = "Select Tipo, Precio from LAVADO"
+            val st: Statement? = connectSql.dbCon()?.createStatement()
+            val result: ResultSet? = st?.executeQuery(querry)
+
+            if (result != null) {
+                result.next()
+
+                var selectedCarwashArray: ArrayList<String> = arrayListOf()
+
+
+                for (x in 1..count) {
+                    for (x in 1..2) {
+                        //println(result.getString(x))
+                        selectedCarwashArray.add(result.getString(x))
+                        if (x==1){
+                            carwashesNamesArray.add(result.getString(x))
+                            carwashesPricesArray.add(result.getString(x+1))
+                        }
+
+
+                    }
+                    println(selectedCarwashArray)
+                    selectedCarwashArray.clear()
+                    result.next()
+                }
+
+            }
+            Toast.makeText(this,"Datos sobre las citas obtenidos",Toast.LENGTH_SHORT).show()
+        } catch (ex: SQLException){
+            Toast.makeText(this,"Datos sobre las citas no encontrados", Toast.LENGTH_SHORT).show()
+        }
+
         var plateAppointmentClient = findViewById<TextView>(R.id.plateEditTextClient)
 
         //var usernameClientAppointment = findViewById<TextView>(R.id.usernameAppointmentTextViewClient)
@@ -61,7 +156,7 @@ class ClientAppointmentActivity : AppCompatActivity() {
         val spinner = findViewById<Spinner>(R.id.branchSpinnerClient)
         if (spinner != null) {
             val adapter = ArrayAdapter(this,
-                    android.R.layout.simple_spinner_item, branchs)
+                    android.R.layout.simple_spinner_item, branchesNamesArray)
             spinner.adapter = adapter
 
             spinner.onItemSelectedListener = object :
@@ -70,9 +165,9 @@ class ClientAppointmentActivity : AppCompatActivity() {
                                             view: View, position: Int, id: Long) {
                         Toast.makeText(this@ClientAppointmentActivity,
                             getString(R.string.selected_item) + " " +
-                                    "" + branchs[position], Toast.LENGTH_SHORT).show()
+                                    "" + branchesNamesArray[position], Toast.LENGTH_SHORT).show()
                     // escribir el texto de la sucursal seleccionada para la posterior factura
-                    branchText = branchs[position]
+                    branchText = branchesNamesArray[position]
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
@@ -87,7 +182,7 @@ class ClientAppointmentActivity : AppCompatActivity() {
         val spinner2 = findViewById<Spinner>(R.id.serviceSpinnerClient)
         if (spinner2 != null) {
             val adapter2 = ArrayAdapter(this,
-                    android.R.layout.simple_spinner_item, services)
+                    android.R.layout.simple_spinner_item, carwashesNamesArray)
             spinner2.adapter = adapter2
 
             spinner2.onItemSelectedListener = object :
@@ -96,9 +191,10 @@ class ClientAppointmentActivity : AppCompatActivity() {
                                             view: View, position: Int, id: Long) {
                     Toast.makeText(this@ClientAppointmentActivity,
                             getString(R.string.selected_item) + " " +
-                                    "" + services[position], Toast.LENGTH_SHORT).show()
+                                    "" + carwashesNamesArray[position], Toast.LENGTH_SHORT).show()
                     // escribir el texto del servicio seleccionado para la posterior factura
-                    serviceText = services[position]
+                    serviceText = carwashesNamesArray[position]
+                    carwashPrice = carwashesPricesArray[position]
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
@@ -152,7 +248,7 @@ class ClientAppointmentActivity : AppCompatActivity() {
             mDoc.open()
 
             //Generaar el texto que se mostrara en la factura
-            val mText = line2+"\nRECIBO MECATEC\n" + line2 + "\nCliente: " + usernameText + "\n" + line +"\nPlaca: " + plateText + "\n" + line + "\nSucursal: " + branchText + "\n" + line + "\nTipo de lavado: " + serviceText + "                        $10.000."
+            val mText = line2+"\nRECIBO MECATEC\n" + line2 + "\nCliente: " + usernameText + "\n" + line +"\nPlaca: " + plateText + "\n" + line + "\nSucursal: " + branchText + "\n" + line + "\nTipo de lavado: " + serviceText + "                        $"+carwashPrice+"."
 
 
             mDoc.addAuthor("Atif Pervaiz")
